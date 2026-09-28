@@ -7,6 +7,7 @@ export interface AuthContextValue {
   session: Session | null | undefined;
   profile: Profile | null;
   profileLoading: boolean;
+  profileError: string | null;
   updateProfile: (changes: ProfileUpdate) => Promise<void>;
   signOut: () => Promise<void>;
 }
