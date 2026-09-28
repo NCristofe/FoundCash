@@ -39,6 +39,8 @@ export function DashboardPreview() {
   };
 
   const pending = attentionOpportunities.length - contacted.size;
+  const alertExample = attentionOpportunities[0];
+  const recoveredStat = dashboardStats.find((stat) => stat.id === 'recovered');
 
   return (
     <div className="dash-wrapper" ref={ref}>
@@ -175,8 +177,10 @@ export function DashboardPreview() {
           <Bell size={15} />
         </span>
         <span>
-          <strong>Mariana Oliveira</strong>
-          <small>5 dias sem resposta · {formatCurrency(4500)}</small>
+          <strong>{alertExample.client}</strong>
+          <small>
+            {alertExample.daysWithoutReply} dias sem resposta · {formatCurrency(alertExample.value)}
+          </small>
         </span>
       </div>
 
@@ -186,7 +190,7 @@ export function DashboardPreview() {
         </span>
         <span>
           <small>Recuperado este mês</small>
-          <strong>+ {formatCurrency(4280)}</strong>
+          <strong>+ {formatCurrency(recoveredStat?.value ?? 0)}</strong>
         </span>
       </div>
     </div>
