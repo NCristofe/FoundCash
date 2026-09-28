@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { navLinks } from '../../data/content';
-import { useUI } from '../../context/useUI';
+import { useAuth } from '../../auth/useAuth';
+import { navigate } from '../../router/router';
 import { Logo } from '../common/Logo';
 import { StartButton } from '../common/StartButton';
 import './Navbar.css';
@@ -12,7 +13,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const { openAuth } = useUI();
+  const { session } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 12);
@@ -50,7 +51,7 @@ export function Navbar() {
 
   const handleLogin = () => {
     closeMenu();
-    openAuth('login');
+    navigate(session ? '/app' : '/entrar');
   };
 
   return (
@@ -69,10 +70,12 @@ export function Navbar() {
         </nav>
 
         <div className="navbar-actions">
-          <button type="button" className="btn btn-ghost btn-sm" onClick={handleLogin}>
-            Entrar
-          </button>
-          <StartButton size="sm" withArrow={false} />
+          {!session && (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={handleLogin}>
+              Entrar
+            </button>
+          )}
+          <StartButton size="sm" withArrow={false} label="Testar grátis" />
         </div>
 
         <button
@@ -102,9 +105,11 @@ export function Navbar() {
             </ul>
           </nav>
           <div className="navbar-mobile-actions">
-            <button type="button" className="btn btn-secondary btn-block" onClick={handleLogin}>
-              Entrar
-            </button>
+            {!session && (
+              <button type="button" className="btn btn-secondary btn-block" onClick={handleLogin}>
+                Entrar
+              </button>
+            )}
             <StartButton block onClick={closeMenu} />
           </div>
         </div>
