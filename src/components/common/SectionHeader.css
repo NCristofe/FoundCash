@@ -1,0 +1,30 @@
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+  margin-bottom: 64px;
+}
+
+.section-header--center {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+
+.section-title {
+  font-size: var(--fs-h2);
+  font-weight: 700;
+}
+
+.section-lead {
+  max-width: 620px;
+  color: var(--muted);
+  font-size: var(--fs-body);
+}
+
+@media (max-width: 767px) {
+  .section-header {
+    margin-bottom: 44px;
+  }
+}
