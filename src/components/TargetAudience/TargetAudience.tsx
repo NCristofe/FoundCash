@@ -10,8 +10,8 @@ export function TargetAudience() {
         <SectionHeader
           id="publico-titulo"
           eyebrow="Para quem é"
-          title="Feito para quem vende serviços e orçamentos."
-          lead="Se o seu negócio depende de orçamentos, o FoundCash ajuda você a não perder nenhum de vista."
+          title="Feito para quem vende energia solar."
+          lead="Propostas de alto valor e decisão demorada: é exatamente onde um follow-up bem feito muda o resultado."
         />
 
         <ul className="audience-grid">
@@ -33,7 +33,8 @@ export function TargetAudience() {
         </ul>
 
         <p className="audience-note">
-          Trabalha com orçamentos em outro segmento? O FoundCash também é para você.
+
+          Trabalha com propostas de alto valor em outro segmento? O FoundCash também funciona para você.
         </p>
       </div>
     </section>
