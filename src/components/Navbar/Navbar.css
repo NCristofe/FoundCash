@@ -1,0 +1,119 @@
+.navbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    backdrop-filter 0.3s var(--ease);
+}
+
+.navbar.is-solid {
+  background: rgba(7, 17, 31, 0.82);
+  border-bottom-color: var(--border);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: var(--nav-h);
+}
+
+.navbar-links {
+  margin-inline: auto;
+}
+
+.navbar-links ul {
+  display: flex;
+  gap: 4px;
+}
+
+.navbar-links a {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition:
+    color 0.2s var(--ease),
+    background-color 0.2s var(--ease);
+}
+
+.navbar-links a:hover {
+  color: var(--white);
+  background: rgba(148, 163, 184, 0.06);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(148, 163, 184, 0.06);
+}
+
+/* Menu mobile */
+.navbar-mobile {
+  position: fixed;
+  inset: var(--nav-h) 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 24px var(--gutter) 32px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  animation: menu-in 0.25s var(--ease);
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.navbar-mobile ul {
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar-mobile a {
+  display: block;
+  padding: 16px 4px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 959px) {
+  .navbar-links,
+  .navbar-actions {
+    display: none;
+  }
+
+  .navbar-toggle {
+    display: inline-flex;
+  }
+}
