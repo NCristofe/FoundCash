@@ -34,6 +34,14 @@
   color: var(--green);
 }
 
+.toast--error {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.toast--error > svg {
+  color: #f87171;
+}
+
 .toast p {
   flex: 1;
 }
