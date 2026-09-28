@@ -109,7 +109,9 @@ export function DashboardPreview() {
                 labels={opportunityTrend.labels}
                 drawn={inView}
                 height={78}
-                ariaLabel="Valor em oportunidades abertas subiu de R$ 11.200 para R$ 18.450 ao longo da semana."
+                ariaLabel={`Valor em propostas abertas subiu de ${formatCurrency(
+                  opportunityTrend.values[0],
+                )} para ${formatCurrency(opportunityTrend.values[opportunityTrend.values.length - 1])} na semana.`}
               />
             </div>
 
