@@ -1,3 +1,47 @@
+.pricing-toggle {
+  display: flex;
+  width: fit-content;
+  margin: -24px auto 40px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--card);
+}
+
+.pricing-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  transition:
+    background-color 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.pricing-toggle button.is-active {
+  background: rgba(148, 163, 184, 0.14);
+  color: var(--white);
+}
+
+.pricing-save {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 0.72rem;
+}
+
+.plan-billing {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
 .pricing-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
