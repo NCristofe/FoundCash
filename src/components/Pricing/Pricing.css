@@ -1,0 +1,131 @@
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.pricing-grid > div {
+  height: 100%;
+}
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 36px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+
+.plan--highlighted {
+  border-color: rgba(34, 197, 94, 0.45);
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(34, 197, 94, 0.1), transparent 70%),
+    var(--card);
+  box-shadow:
+    var(--shadow-card),
+    0 30px 80px -40px rgba(34, 197, 94, 0.45);
+}
+
+.plan-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.plan-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 24px;
+}
+
+.plan-currency {
+  color: var(--muted);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.plan-amount {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.plan-period {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.plan-description {
+  margin-top: 12px;
+  color: var(--muted);
+  min-height: 3.2em;
+}
+
+.plan-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-block: 28px 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 1rem;
+}
+
+.plan-features svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: var(--green);
+}
+
+.plan .btn {
+  margin-top: auto;
+}
+
+.pricing-note {
+  margin-top: 32px;
+  text-align: center;
+  color: var(--muted);
+}
+
+@media (max-width: 767px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+  }
+
+  .plan {
+    padding: 28px 22px;
+  }
+
+  .plan-description {
+    min-height: 0;
+  }
+}
