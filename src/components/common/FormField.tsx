@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
@@ -8,7 +8,10 @@ interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 /** Campo de formulário com label, dica e mensagem de erro acessíveis. */
-export function FormField({ id, label, error, hint, className = '', ...inputProps }: FormFieldProps) {
+export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(function FormField(
+  { id, label, error, hint, className = '', ...inputProps },
+  ref,
+) {
   const hintId = hint ? `${id}-dica` : undefined;
   const errorId = error ? `${id}-erro` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
@@ -16,7 +19,7 @@ export function FormField({ id, label, error, hint, className = '', ...inputProp
   return (
     <div className={`field ${className}`}>
       <label htmlFor={id}>{label}</label>
-      <input id={id} aria-invalid={Boolean(error)} aria-describedby={describedBy} {...inputProps} />
+      <input ref={ref} id={id} aria-invalid={Boolean(error)} aria-describedby={describedBy} {...inputProps} />
       {hint && (
         <p id={hintId} className="field-hint">
           {hint}
@@ -29,4 +32,4 @@ export function FormField({ id, label, error, hint, className = '', ...inputProp
       )}
     </div>
   );
-}
+});
