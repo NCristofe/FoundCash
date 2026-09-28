@@ -1,4 +1,4 @@
-import { features } from '../../data/content';
+import { features, roadmap } from '../../data/content';
 import { Reveal } from '../common/Reveal';
 import { SectionHeader } from '../common/SectionHeader';
 import './Features.css';
@@ -29,6 +29,23 @@ export function Features() {
             </li>
           ))}
         </ul>
+
+        <div className="roadmap">
+          <h3 className="roadmap-title">
+            <span className="roadmap-badge">Em breve</span> No nosso radar
+          </h3>
+          <ul className="roadmap-list">
+            {roadmap.map(({ title, description, icon: Icon }) => (
+              <li key={title} className="roadmap-item">
+                <Icon size={20} aria-hidden="true" />
+                <div>
+                  <p className="roadmap-item-title">{title}</p>
+                  <p className="roadmap-item-text">{description}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
