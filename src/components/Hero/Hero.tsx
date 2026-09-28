@@ -15,17 +15,17 @@ export function Hero() {
         <div className="hero-copy">
           <p className="hero-chip load-in" style={delay(0)}>
             <span className="hero-chip-dot" aria-hidden="true" />
-            Dinheiro parado também é oportunidade.
+            Para integradores de energia solar
           </p>
 
           <h1 id="hero-title" className="hero-title load-in" style={delay(80)}>
-            Existe <span className="hero-highlight">dinheiro parado</span> nos seus orçamentos.
+            Existe <span className="hero-highlight">dinheiro parado</span> nas suas propostas.
             <span className="hero-title-sub">O FoundCash encontra para você.</span>
           </h1>
 
           <p className="hero-lead load-in" style={delay(180)}>
-            Descubra quais clientes precisam de um novo contato, acompanhe seus orçamentos e transforme
-            oportunidades esquecidas em vendas.
+            Saiba quais clientes precisam de um novo contato, acompanhe cada proposta e transforme orçamentos
+            esquecidos em sistemas vendidos.
           </p>
 
           <div className="hero-actions load-in" style={delay(260)}>
@@ -37,10 +37,13 @@ export function Hero() {
 
           <ul className="hero-trust load-in" style={delay(340)}>
             <li>
+              <Check size={16} aria-hidden="true" /> 14 dias grátis
+            </li>
+            <li>
               <Check size={16} aria-hidden="true" /> Sem cartão de crédito
             </li>
             <li>
-              <Check size={16} aria-hidden="true" /> Comece em poucos minutos
+              <Check size={16} aria-hidden="true" /> Cadastro de proposta em 15 segundos
             </li>
           </ul>
         </div>
