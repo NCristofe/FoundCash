@@ -43,8 +43,8 @@ export function ExampleOpportunity() {
         <SectionHeader
           id="exemplo-titulo"
           eyebrow="Na prática"
-          title="Um orçamento esquecido pode valer milhares."
-          lead="Veja como o FoundCash mostra uma oportunidade parada — e o que fazer com ela."
+          title="Uma proposta esquecida pode valer dezenas de milhares."
+          lead="Veja como o FoundCash mostra uma proposta parada — e o que fazer com ela."
         />
 
         <Reveal className="example-grid">
