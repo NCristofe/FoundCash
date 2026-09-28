@@ -1,44 +1,40 @@
 import { ArrowRight } from 'lucide-react';
-import { useUI } from '../../context/useUI';
-import type { PlanId } from '../../data/pricing';
+import { useAuth } from '../../auth/useAuth';
+import { signupPath, trialCtaLabel, type BillingCycle, type PlanId } from '../../data/pricing';
+import { Link } from '../../router/Link';
 
 interface StartButtonProps {
   label?: string;
   planId?: PlanId;
+  cycle?: BillingCycle;
   size?: 'sm' | 'md' | 'lg';
   block?: boolean;
   variant?: 'primary' | 'secondary';
   withArrow?: boolean;
-  /** Executado antes de abrir o cadastro (ex.: fechar o menu mobile). */
+  /** Executado antes da navegação (ex.: fechar o menu mobile). */
   onClick?: () => void;
 }
 
-/** Botão de CTA principal: abre o fluxo de cadastro. */
+/** CTA principal: leva ao cadastro (ou ao painel, se o usuário já estiver logado). */
 export function StartButton({
-  label = 'Começar gratuitamente',
-  planId = 'free',
+  label = trialCtaLabel,
+  planId = 'essencial',
+  cycle = 'monthly',
   size = 'md',
   block = false,
   variant = 'primary',
   withArrow = true,
   onClick,
 }: StartButtonProps) {
-  const { openAuth } = useUI();
+  const { session } = useAuth();
   const classes = ['btn', `btn-${variant}`, size !== 'md' && `btn-${size}`, block && 'btn-block']
     .filter(Boolean)
     .join(' ');
 
   return (
-    <button
-      type="button"
-      className={classes}
-      onClick={() => {
-        onClick?.();
-        openAuth('signup', planId);
-      }}
-    >
-      {label}
+    <Link to={session ? '/app' : signupPath(planId, cycle)} className={classes} onClick={onClick}>
+      {session ? 'Abrir meu painel' : label}
       {withArrow && <ArrowRight className="icon-arrow" size={18} aria-hidden="true" />}
-    </button>
+    </Link>
   );
 }
