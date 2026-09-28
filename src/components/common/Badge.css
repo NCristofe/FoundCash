@@ -1,0 +1,38 @@
+.badge {
+  --badge-color: var(--muted);
+  --badge-bg: rgba(148, 163, 184, 0.1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  color: var(--badge-color);
+  background: var(--badge-bg);
+  border: 1px solid color-mix(in srgb, var(--badge-color) 22%, transparent);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.badge--green {
+  --badge-color: var(--green);
+  --badge-bg: var(--green-soft);
+}
+
+.badge--yellow {
+  --badge-color: var(--yellow);
+  --badge-bg: var(--yellow-soft);
+}
+
+.badge--red {
+  --badge-color: #f87171;
+  --badge-bg: var(--red-soft);
+}
