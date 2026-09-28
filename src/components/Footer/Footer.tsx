@@ -1,12 +1,14 @@
 import { footerLinks } from '../../data/content';
+import { signupPath } from '../../data/pricing';
 import { useUI } from '../../context/useUI';
+import { Link } from '../../router/Link';
 import { Logo } from '../common/Logo';
 import './Footer.css';
 
 const legalLinks = ['Termos de Uso', 'Política de Privacidade'];
 
 export function Footer() {
-  const { openAuth, showToast } = useUI();
+  const { showToast } = useUI();
 
   return (
     <footer className="footer">
@@ -14,7 +16,7 @@ export function Footer() {
         <div className="footer-top">
           <div className="footer-brand">
             <Logo />
-            <p>Existe dinheiro parado nos seus orçamentos. O FoundCash ajuda você a encontrar.</p>
+            <p>Existe dinheiro parado nas suas propostas. O FoundCash ajuda você a encontrar.</p>
           </div>
 
           <nav aria-label="Rodapé">
@@ -25,14 +27,10 @@ export function Footer() {
                 </li>
               ))}
               <li>
-                <button type="button" onClick={() => openAuth('login')}>
-                  Entrar
-                </button>
+                <Link to="/entrar">Entrar</Link>
               </li>
               <li>
-                <button type="button" onClick={() => openAuth('signup')}>
-                  Criar conta
-                </button>
+                <Link to={signupPath()}>Criar conta</Link>
               </li>
             </ul>
           </nav>
