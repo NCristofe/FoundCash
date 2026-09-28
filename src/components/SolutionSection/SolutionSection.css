@@ -1,0 +1,131 @@
+.flow {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.flow-step {
+  --flow-color: var(--muted);
+  position: relative;
+}
+
+.flow-step--yellow {
+  --flow-color: var(--yellow);
+}
+
+.flow-step--green {
+  --flow-color: var(--green);
+}
+
+/* Conector até a próxima etapa */
+.flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 31px;
+  left: calc(50% + 40px);
+  right: calc(-50% + 24px);
+  height: 2px;
+  background: repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.35) 0 6px, transparent 6px 12px);
+}
+
+.flow-step-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.flow-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--flow-color) 35%, transparent);
+  background: linear-gradient(180deg, var(--card-2), var(--card));
+  color: var(--flow-color);
+  box-shadow: var(--shadow-card);
+}
+
+.flow-step--green .flow-icon {
+  background: var(--green);
+  color: #052e16;
+  box-shadow: 0 16px 40px -16px rgba(34, 197, 94, 0.7);
+}
+
+.flow-index {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.flow-label {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.flow-step--green .flow-label {
+  color: var(--green);
+}
+
+.flow-description {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+@media (max-width: 1199px) {
+  .flow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 48px;
+  }
+
+  .flow-step:nth-child(3n)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .flow {
+    grid-template-columns: 1fr;
+    row-gap: 0;
+    max-width: 420px;
+    margin-inline: auto;
+  }
+
+  .flow-step {
+    padding-bottom: 28px;
+  }
+
+  .flow-step-inner {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: 18px;
+  }
+
+  .flow-icon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
+
+  .flow-step:not(:last-child)::after,
+  .flow-step:nth-child(3n):not(:last-child)::after {
+    display: block;
+    top: 64px;
+    bottom: 6px;
+    left: 27px;
+    right: auto;
+    width: 2px;
+    height: auto;
+    background: repeating-linear-gradient(180deg, rgba(148, 163, 184, 0.35) 0 6px, transparent 6px 12px);
+  }
+}
