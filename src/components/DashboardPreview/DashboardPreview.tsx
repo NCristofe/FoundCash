@@ -99,7 +99,7 @@ export function DashboardPreview() {
 
             <div className="dash-chart">
               <div className="dash-panel-head">
-                <p className="dash-panel-title">Oportunidades abertas</p>
+                <p className="dash-panel-title">Dinheiro em propostas ativas</p>
                 <span className="dash-trend">
                   <TrendingUp size={13} aria-hidden="true" /> +12,4%
                 </span>
@@ -117,7 +117,7 @@ export function DashboardPreview() {
 
             <div className="dash-attention">
               <div className="dash-panel-head">
-                <p className="dash-panel-title">Oportunidades que precisam de atenção</p>
+                <p className="dash-panel-title">Prioridade de hoje</p>
                 <span className="dash-count">
                   {pending}
                   <span className="sr-only"> pendentes</span>
