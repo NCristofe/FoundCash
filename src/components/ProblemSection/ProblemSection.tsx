@@ -1,5 +1,5 @@
 import { CheckCheck, Clock, FileText } from 'lucide-react';
-import { problemSteps, type ProblemVisual } from '../../data/content';
+import { problemExample, problemSteps, type ProblemVisual } from '../../data/content';
 import { formatCurrency } from '../../utils/format';
 import { Reveal } from '../common/Reveal';
 import { SectionHeader } from '../common/SectionHeader';
@@ -12,9 +12,9 @@ function ProblemScene({ visual }: { visual: ProblemVisual }) {
       <div className="scene">
         <div className="bubble bubble--out">
           <span className="bubble-file">
-            <FileText size={14} /> orcamento-carlos.pdf
+            <FileText size={14} /> {problemExample.file}
           </span>
-          Olá, Carlos! Segue o orçamento da instalação.
+          {problemExample.sentMessage}
           <span className="bubble-meta">
             09:14 <CheckCheck size={13} className="text-green" />
           </span>
@@ -27,7 +27,7 @@ function ProblemScene({ visual }: { visual: ProblemVisual }) {
     return (
       <div className="scene">
         <div className="bubble bubble--in">
-          Vou pensar e te aviso 👍
+          {problemExample.reply}
           <span className="bubble-meta">09:32</span>
         </div>
         <p className="scene-note scene-note--yellow">
@@ -40,8 +40,8 @@ function ProblemScene({ visual }: { visual: ProblemVisual }) {
   return (
     <div className="scene">
       <div className="scene-card">
-        <span>Orçamento #0183</span>
-        <strong className="tabular">{formatCurrency(3200)}</strong>
+        <span>Proposta {problemExample.code}</span>
+        <strong className="tabular">{formatCurrency(problemExample.value)}</strong>
       </div>
       <p className="scene-note scene-note--red">
         <span className="scene-dot" /> Sem retorno há 12 dias
@@ -57,11 +57,11 @@ export function ProblemSection() {
         <SectionHeader
           id="problema-titulo"
           eyebrow="O problema"
-          title="Quantos orçamentos estão esquecidos hoje?"
+          title="Quantas propostas estão esquecidas hoje?"
           lead={
             <>
-              Você envia o orçamento, o cliente diz “vou pensar” e a conversa acaba. Dias depois, aquele possível
-              cliente simplesmente desapareceu.
+              Você faz a visita, dimensiona o sistema e envia a proposta. O cliente diz “vou pensar” e a conversa
+              acaba. Semanas depois, ele instalou com outro integrador.
             </>
           }
         />
@@ -89,7 +89,7 @@ export function ProblemSection() {
         </ol>
 
         <Reveal delay={300}>
-          <p className="problem-quote">Não deixe o orçamento virar silêncio.</p>
+          <p className="problem-quote">Não deixe a proposta virar silêncio.</p>
         </Reveal>
       </div>
     </section>
