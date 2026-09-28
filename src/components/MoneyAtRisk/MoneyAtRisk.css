@@ -1,0 +1,230 @@
+.money {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(34, 197, 94, 0.07), transparent 70%),
+    var(--bg-2);
+  border-block: 1px solid var(--border);
+}
+
+.money-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  padding: 48px;
+  border-radius: var(--radius-xl);
+}
+
+.money-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.money-label {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.money-total {
+  font-size: clamp(2.75rem, 1.9rem + 3.4vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.money-change {
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--muted);
+  font-size: var(--fs-small);
+}
+
+.money-change strong {
+  color: var(--green);
+}
+
+.money-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.money-item {
+  --item-color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(7, 17, 31, 0.45);
+}
+
+.money-item--green {
+  --item-color: var(--green);
+}
+
+.money-item--yellow {
+  --item-color: var(--yellow);
+}
+
+.money-item--red {
+  --item-color: var(--red);
+}
+
+.money-item-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.money-item-label {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.money-item-bar {
+  height: 4px;
+  margin-top: 10px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.12);
+  overflow: hidden;
+}
+
+.money-item-bar span {
+  display: block;
+  width: var(--fill);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--item-color);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s var(--ease) 0.4s;
+}
+
+.money-panel.is-active .money-item-bar span {
+  transform: scaleX(1);
+}
+
+/* Gráfico de barras */
+.money-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: rgba(7, 17, 31, 0.45);
+}
+
+.money-chart-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.money-chart-period {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.money-bars {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  align-items: end;
+  gap: 10px;
+  height: 240px;
+  flex: 1;
+}
+
+.money-bar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+}
+
+.money-bar-fill {
+  width: 100%;
+  max-width: 36px;
+  /* 80% da coluna fica para a barra; o restante para rótulo e valor */
+  height: calc(var(--height) * 0.8);
+  border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.35), rgba(148, 163, 184, 0.12));
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.9s var(--ease);
+  transition-delay: var(--bar-delay);
+}
+
+.money-bar.is-current .money-bar-fill {
+  background: linear-gradient(180deg, var(--green), rgba(34, 197, 94, 0.35));
+  box-shadow: 0 0 24px -6px rgba(34, 197, 94, 0.6);
+}
+
+.money-panel.is-active .money-bar-fill {
+  transform: scaleY(1);
+}
+
+.money-bar-label {
+  color: var(--muted-2);
+  font-size: 0.72rem;
+}
+
+.money-bar-tip {
+  position: absolute;
+  top: -6px;
+  right: 0;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--green);
+  color: #052e16;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease) 1s;
+}
+
+.money-panel.is-active .money-bar-tip {
+  opacity: 1;
+}
+
+@media (max-width: 1199px) {
+  .money-panel {
+    grid-template-columns: 1fr;
+    padding: 36px;
+  }
+}
+
+@media (max-width: 767px) {
+  .money-panel {
+    padding: 24px 20px;
+    gap: 32px;
+  }
+
+  .money-breakdown {
+    grid-template-columns: 1fr;
+  }
+
+  .money-chart {
+    padding: 18px 14px;
+  }
+
+  .money-bars {
+    height: 180px;
+    gap: 6px;
+  }
+}
