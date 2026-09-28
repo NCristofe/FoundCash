@@ -1,0 +1,143 @@
+.how-wrap {
+  position: relative;
+}
+
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+
+/* Trilha de progresso que conecta os três passos */
+.how-track {
+  position: absolute;
+  top: 31px;
+  left: calc(100% / 6);
+  right: calc(100% / 6);
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+}
+
+.how-track-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-2), var(--green));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.3s var(--ease) 0.15s;
+}
+
+.how-wrap.is-active .how-track-fill {
+  transform: scaleX(1);
+}
+
+.how-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.how-node {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--card);
+  box-shadow: 0 0 0 8px var(--bg);
+  color: var(--muted);
+  transition:
+    background-color 0.5s var(--ease),
+    border-color 0.5s var(--ease),
+    color 0.5s var(--ease),
+    box-shadow 0.5s var(--ease);
+  transition-delay: var(--step-delay);
+}
+
+.how-wrap.is-active .how-node {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: #0f2b22;
+  color: var(--green);
+  box-shadow:
+    0 0 0 8px var(--bg),
+    0 0 32px -6px rgba(34, 197, 94, 0.5);
+}
+
+.how-number {
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.how-title {
+  font-size: var(--fs-h3);
+  font-weight: 700;
+}
+
+.how-text {
+  max-width: 300px;
+  color: var(--muted);
+}
+
+.how-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 64px;
+}
+
+@media (max-width: 767px) {
+  .how-steps {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    max-width: 420px;
+    margin-inline: auto;
+  }
+
+  .how-track {
+    top: 32px;
+    bottom: 64px;
+    left: max(31px, calc(50% - 210px + 31px));
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+
+  .how-track-fill {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+
+  .how-wrap.is-active .how-track-fill {
+    transform: scaleY(1);
+  }
+
+  .how-step {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    column-gap: 20px;
+    row-gap: 4px;
+    text-align: left;
+    align-items: start;
+  }
+
+  .how-node {
+    grid-row: span 3;
+    margin-bottom: 0;
+  }
+
+  .how-cta {
+    margin-top: 48px;
+  }
+
+  .how-cta .btn {
+    width: 100%;
+  }
+}
