@@ -11,6 +11,7 @@ import { Navbar } from '../../components/Navbar/Navbar';
 import { Pricing } from '../../components/Pricing/Pricing';
 import { ProblemSection } from '../../components/ProblemSection/ProblemSection';
 import { Recovery } from '../../components/Recovery/Recovery';
+import { RoiCalculator } from '../../components/RoiCalculator/RoiCalculator';
 import { SolutionSection } from '../../components/SolutionSection/SolutionSection';
 import { TargetAudience } from '../../components/TargetAudience/TargetAudience';
 
@@ -32,6 +33,7 @@ export function LandingPage() {
         <Recovery />
         <TargetAudience />
         <Benefits />
+        <RoiCalculator />
         <Pricing />
         <FAQ />
         <FinalCTA />

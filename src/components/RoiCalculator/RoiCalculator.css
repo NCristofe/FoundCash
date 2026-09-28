@@ -1,0 +1,124 @@
+.roi-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+.roi-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 32px;
+}
+
+.roi-slider-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.roi-slider-head label {
+  font-weight: 600;
+}
+
+.roi-slider-head output {
+  font-weight: 700;
+  color: var(--green);
+}
+
+.roi-slider input[type='range'] {
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  appearance: none;
+  background: linear-gradient(90deg, var(--green) var(--fill), rgba(148, 163, 184, 0.2) var(--fill));
+  cursor: pointer;
+}
+
+.roi-slider input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--bg);
+  background: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
+}
+
+.roi-slider input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid var(--bg);
+  background: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
+}
+
+.roi-disclaimer {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.roi-report {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  background:
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(34, 197, 94, 0.12), transparent 70%),
+    var(--card);
+  box-shadow: var(--shadow-card);
+}
+
+.roi-report-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.roi-report-text {
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  line-height: 1.5;
+}
+
+.roi-report-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: auto;
+}
+
+.roi-report-stats dt {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.roi-report-stats dd {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+@media (max-width: 959px) {
+  .roi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .roi-inputs,
+  .roi-report {
+    padding: 24px 20px;
+  }
+
+  .roi-report .btn {
+    white-space: normal;
+  }
+}
