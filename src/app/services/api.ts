@@ -5,7 +5,12 @@ import type {
   NewOpportunity,
   Opportunity,
   OpportunityEvent,
+  ProposalLink,
+  ProposalResponse,
+  PublicProposal,
 } from '../../lib/types';
+
+const PROPOSALS_BUCKET = 'proposals';
 
 export type OpportunityChanges = Partial<
   Pick<Opportunity, 'client_name' | 'whatsapp' | 'value' | 'follow_up_on' | 'status' | 'loss_reason' | 'last_contact_at'>
@@ -80,6 +85,81 @@ export async function saveTemplate(template: { id?: string; title: string; body:
 
 export async function deleteTemplate(id: string): Promise<void> {
   const { error } = await requireSupabase().from('message_templates').delete().eq('id', id);
+  if (error) throw error;
+}
+
+/* Link rastreável da proposta --------------------------------------------------- */
+
+export function proposalUrl(token: string): string {
+  return `${window.location.origin}/p/${token}`;
+}
+
+export function proposalFileUrl(filePath: string): string {
+  return requireSupabase().storage.from(PROPOSALS_BUCKET).getPublicUrl(filePath).data.publicUrl;
+}
+
+export async function fetchProposalLinks(): Promise<ProposalLink[]> {
+  const { data, error } = await requireSupabase().from('proposal_links').select('*').limit(5000);
+  if (error) throw error;
+  return (data ?? []) as ProposalLink[];
+}
+
+/**
+ * Envia o PDF e cria o link da oportunidade (ou troca o PDF, mantendo o mesmo
+ * link, visitas e resposta).
+ */
+export async function saveProposalFile(opportunityId: string, file: File): Promise<ProposalLink> {
+  const client = requireSupabase();
+  const { data: auth } = await client.auth.getUser();
+  if (!auth.user) throw new Error('Faça login novamente.');
+
+  // Caminho imprevisível: o bucket é público e o arquivo só deve ser achado pelo link.
+  const path = `${auth.user.id}/${crypto.randomUUID()}.pdf`;
+  const storage = client.storage.from(PROPOSALS_BUCKET);
+  const { error: uploadError } = await storage.upload(path, file, { contentType: 'application/pdf' });
+  if (uploadError) throw uploadError;
+
+  const { data: existing } = await client
+    .from('proposal_links')
+    .select('id, file_path')
+    .eq('opportunity_id', opportunityId)
+    .maybeSingle();
+
+  const { data, error } = existing
+    ? await client
+        .from('proposal_links')
+        .update({ file_path: path, file_name: file.name })
+        .eq('id', existing.id)
+        .select('*')
+        .single()
+    : await client
+        .from('proposal_links')
+        .insert({ opportunity_id: opportunityId, file_path: path, file_name: file.name })
+        .select('*')
+        .single();
+
+  if (error) {
+    await storage.remove([path]);
+    throw error;
+  }
+  if (existing?.file_path) await storage.remove([existing.file_path]);
+  return data as ProposalLink;
+}
+
+/** Página pública: dados da proposta. `track = false` não conta visita (o próprio integrador vendo). */
+export async function openProposal(token: string, track: boolean): Promise<PublicProposal | null> {
+  const { data, error } = await requireSupabase().rpc('open_proposal', { p_token: token, p_track: track });
+  if (error) throw error;
+  const row = (data as PublicProposal[] | null)?.[0];
+  return row ? { ...row, value: Number(row.value) } : null;
+}
+
+export async function respondProposal(token: string, response: ProposalResponse, note: string): Promise<void> {
+  const { error } = await requireSupabase().rpc('respond_proposal', {
+    p_token: token,
+    p_response: response,
+    p_note: note,
+  });
   if (error) throw error;
 }
 
