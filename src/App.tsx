@@ -4,6 +4,7 @@ import { UIProvider } from './context/UIProvider';
 import { AuthPage } from './pages/AuthPage/AuthPage';
 import { LandingPage } from './pages/LandingPage/LandingPage';
 import { NotFound } from './pages/NotFound/NotFound';
+import { ProposalPage } from './pages/ProposalPage/ProposalPage';
 import { useLocation } from './router/router';
 
 function Routes() {
@@ -15,6 +16,7 @@ function Routes() {
   if (pathname === '/recuperar-senha') return <AuthPage key="forgot" mode="forgot" />;
   if (pathname === '/redefinir-senha') return <AuthPage key="reset" mode="reset" />;
   if (pathname === '/app' || pathname.startsWith('/app/')) return <AppShell pathname={pathname} />;
+  if (pathname.startsWith('/p/')) return <ProposalPage token={pathname.slice(3)} />;
   return <NotFound />;
 }
 
