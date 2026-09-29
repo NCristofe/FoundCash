@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Copy, MessageCircle, PartyPopper, RotateCcw, Trash2, XCircle } from 'lucide-react';
+import { Check, Copy, ExternalLink, Eye, Link2, MessageCircle, PartyPopper, RotateCcw, Trash2, Upload, XCircle } from 'lucide-react';
 import { Badge } from '../../components/common/Badge';
 import { FOLLOW_UP_SHORTCUTS } from '../../config/app';
 import { builtInTemplates, fillTemplate, lossReasonLabels } from '../../config/niche';
 import { useUI } from '../../context/useUI';
 import { friendlyError } from '../../lib/supabase';
-import type { EventKind, LossReason, Opportunity, OpportunityEvent } from '../../lib/types';
+import type { EventKind, LossReason, Opportunity, OpportunityEvent, ProposalLink, ProposalResponse } from '../../lib/types';
 import { addDaysKey, describeFollowUp, daysFromToday, formatDateTime } from '../../utils/dates';
 import { formatCurrency } from '../../utils/format';
 import { formatPhone, whatsappLink } from '../../utils/parsing';
-import { fetchEvents, type OpportunityChanges } from '../services/api';
+import { fetchEvents, fetchProposalLinks, proposalUrl, saveProposalFile, type OpportunityChanges } from '../services/api';
 import { useAppData } from '../state/useAppData';
 import { Dialog } from './Dialog';
 
@@ -20,6 +20,15 @@ const eventLabels: Record<EventKind, string> = {
   won: 'Venda fechada',
   lost: 'Marcada como perdida',
   reopened: 'Reaberta',
+  viewed: 'Proposta visualizada',
+  responded: 'Cliente respondeu a proposta',
+};
+
+const responseLabels: Record<ProposalResponse, string> = {
+  quero_fechar: '🤝 Quer fechar!',
+  duvida: '💬 Tem uma dúvida',
+  caro: '💰 Achou caro',
+  pensar: '🤔 Vai pensar',
 };
 
 interface OpportunityDialogProps {
@@ -52,6 +61,9 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [events, setEvents] = useState<OpportunityEvent[] | null>(null);
+  const [proposalLink, setProposalLink] = useState<ProposalLink | null | undefined>(undefined);
+  const [uploading, setUploading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const { id, status, updated_at: updatedAt } = opportunity;
 
@@ -65,6 +77,42 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
       cancelled = true;
     };
   }, [id, updatedAt]);
+
+  // Carrega o link rastreável desta oportunidade.
+  useEffect(() => {
+    let cancelled = false;
+    fetchProposalLinks()
+      .then((links) => {
+        if (cancelled) return;
+        setProposalLink(links.find((l) => l.opportunity_id === id) ?? null);
+      })
+      .catch(() => !cancelled && setProposalLink(null));
+    return () => { cancelled = true; };
+  }, [id]);
+
+  const handleUploadPdf = async (file: File) => {
+    setUploading(true);
+    try {
+      const link = await saveProposalFile(id, file);
+      setProposalLink(link);
+      showToast('PDF enviado. Link rastreável pronto!');
+    } catch (error) {
+      showToast(friendlyError(error), 'error');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!proposalLink) return;
+    try {
+      await navigator.clipboard.writeText(proposalUrl(proposalLink.token));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      showToast('Não foi possível copiar. Selecione o endereço e copie.', 'error');
+    }
+  };
 
   const template = templates.find((item) => item.id === templateId) ?? templates[0];
   const firstName = opportunity.client_name.startsWith('WhatsApp') ? '' : opportunity.client_name.split(' ')[0];
@@ -240,6 +288,82 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
           </button>
         </div>
       )}
+
+      <section className="opportunity-block" aria-labelledby="op-proposta">
+        <h3 id="op-proposta">Proposta rastreável</h3>
+
+        {proposalLink === undefined ? (
+          <p className="text-muted">Carregando…</p>
+        ) : proposalLink ? (
+          <div className="proposal-link-box">
+            {proposalLink.response ? (
+              <div className="proposal-link-response">
+                <span className="proposal-link-response-badge">{responseLabels[proposalLink.response]}</span>
+                {proposalLink.response_note && (
+                  <p className="proposal-link-note">&ldquo;{proposalLink.response_note}&rdquo;</p>
+                )}
+              </div>
+            ) : (
+              <div className="proposal-link-views">
+                <Eye size={14} aria-hidden="true" />
+                {proposalLink.view_count === 0
+                  ? 'Ainda não foi visualizada'
+                  : `Vista ${proposalLink.view_count}× ${proposalLink.last_viewed_at ? `(última: ${formatDateTime(proposalLink.last_viewed_at)})` : ''}`}
+              </div>
+            )}
+            <div className="proposal-link-actions">
+              <button type="button" className="btn btn-primary btn-sm" onClick={handleCopyLink}>
+                {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+                {copied ? 'Copiado!' : 'Copiar link'}
+              </button>
+              <a
+                className="btn btn-secondary btn-sm"
+                href={proposalUrl(proposalLink.token)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ExternalLink size={14} aria-hidden="true" /> Ver proposta
+              </a>
+              <label className="btn btn-ghost btn-sm proposal-upload-label">
+                <Upload size={13} aria-hidden="true" /> Trocar PDF
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  style={{ display: 'none' }}
+                  disabled={uploading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleUploadPdf(file);
+                    e.target.value = '';
+                  }}
+                />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <div className="proposal-link-empty">
+            <p className="text-muted" style={{ fontSize: 'var(--fs-small)' }}>
+              Envie a proposta em PDF e gere um link rastreável para o cliente.
+              Você saberá quando ele abriu e o que respondeu.
+            </p>
+            <label className="btn btn-secondary proposal-upload-label">
+              <Link2 size={16} aria-hidden="true" />
+              {uploading ? 'Enviando…' : 'Enviar PDF e gerar link'}
+              <input
+                type="file"
+                accept="application/pdf"
+                style={{ display: 'none' }}
+                disabled={uploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void handleUploadPdf(file);
+                  e.target.value = '';
+                }}
+              />
+            </label>
+          </div>
+        )}
+      </section>
 
       <section className="opportunity-block" aria-labelledby="op-historico">
         <h3 id="op-historico">Histórico</h3>
