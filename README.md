@@ -11,6 +11,7 @@ Stack: React 18 + TypeScript + Vite (CSS puro, ícones Lucide) · Supabase (Post
 | Item | Onde |
 | --- | --- |
 | Entrada Rápida: cliente (nome ou link/número do WhatsApp), valor, follow-up com atalhos (amanhã, 3 dias, 1 semana). Atalho **N** em qualquer tela. | `src/app/components/QuickEntryForm.tsx` |
+| Importar proposta em PDF: lê o texto no navegador (pdf.js) e preenche cliente, WhatsApp e valor por regras, sem IA nem serviço externo | `src/utils/proposalParser.ts`, `src/app/services/readProposalPdf.ts` |
 | Painel: contador de dinheiro em propostas ativas, "Recuperado no mês" com ROI vs. assinatura, **Prioridade de hoje** (top 3 por valor ou atraso) | `src/app/pages/DashboardPage.tsx` |
 | Follow-up: abrir WhatsApp com script preenchido, registrar contato, fechou/perdeu (com motivo), histórico | `src/app/components/OpportunityDialog.tsx` |
 | Relatório mensal de ROI por e-mail no dia 1º ("Neste mês, você recuperou R$ X…") + página de relatório | `supabase/functions/monthly-report`, `src/app/pages/ReportPage.tsx` |
@@ -55,7 +56,18 @@ curl -X POST https://<PROJECT_REF>.supabase.co/functions/v1/monthly-report \
   -d '{"month":"2026-09","dryRun":true}'
 ```
 
-### 3. Rodando
+### 3. (Opcional, desligado) Leitura de propostas com IA
+
+A importação de PDF funciona sem configuração: roda no navegador, por regras. Não funciona com PDF escaneado (imagem).
+
+Para mais precisão no futuro, `supabase/functions/extract-proposal` lê o PDF com o Claude. Ela **não é chamada pelo app hoje**. Para ativar, crie uma chave em [console.anthropic.com](https://console.anthropic.com), rode o deploy abaixo e troque `readProposalPdf` por uma chamada à função em `QuickEntryForm.tsx`.
+
+```bash
+npx supabase secrets set ANTHROPIC_API_KEY=<chave>
+npx supabase functions deploy extract-proposal --no-verify-jwt
+```
+
+### 4. Rodando
 
 ```bash
 npm install
