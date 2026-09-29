@@ -553,6 +553,16 @@ section + section {
   gap: 18px;
 }
 
+.quick-entry-import {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+
 .quick-entry-detected {
   display: inline-flex;
   align-items: center;
@@ -707,6 +717,69 @@ section + section {
   .opportunity-actions > .btn {
     width: 100%;
   }
+}
+
+/* Proposta rastreável (dentro do OpportunityDialog) -------------------------- */
+
+.proposal-link-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: rgba(148, 163, 184, 0.04);
+}
+
+.proposal-link-views {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: var(--fs-small);
+}
+
+.proposal-link-response {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proposal-link-response-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--green);
+  font-size: var(--fs-small);
+  font-weight: 700;
+}
+
+.proposal-link-note {
+  color: var(--muted);
+  font-size: var(--fs-small);
+  font-style: italic;
+}
+
+.proposal-link-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.proposal-link-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.proposal-upload-label {
+  cursor: pointer;
 }
 
 /* Onboarding ----------------------------------------------------------------- */
