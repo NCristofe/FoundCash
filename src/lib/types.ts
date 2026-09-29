@@ -4,7 +4,18 @@ export type { BillingCycle, PlanId };
 
 export type OpportunityStatus = 'open' | 'won' | 'lost';
 export type LossReason = 'preco' | 'concorrente' | 'financiamento' | 'adiou' | 'sem_resposta' | 'outro';
-export type EventKind = 'created' | 'contacted' | 'rescheduled' | 'won' | 'lost' | 'reopened';
+export type EventKind =
+  | 'created'
+  | 'contacted'
+  | 'rescheduled'
+  | 'won'
+  | 'lost'
+  | 'reopened'
+  | 'viewed'
+  | 'responded';
+
+/** Resposta do cliente na página da proposta. */
+export type ProposalResponse = 'quero_fechar' | 'duvida' | 'caro' | 'pensar';
 
 export interface Profile {
   id: string;
@@ -55,6 +66,32 @@ export interface OpportunityEvent {
   opportunity_id: string;
   kind: EventKind;
   created_at: string;
+}
+
+/** Link rastreável da proposta (/p/<token>). Um por oportunidade. */
+export interface ProposalLink {
+  id: string;
+  opportunity_id: string;
+  token: string;
+  file_path: string;
+  file_name: string | null;
+  view_count: number;
+  first_viewed_at: string | null;
+  last_viewed_at: string | null;
+  response: ProposalResponse | null;
+  response_note: string | null;
+  responded_at: string | null;
+  created_at: string;
+}
+
+/** O que a página pública da proposta recebe. */
+export interface PublicProposal {
+  business_name: string | null;
+  client_name: string;
+  value: number;
+  file_path: string;
+  response: ProposalResponse | null;
+  responded_at: string | null;
 }
 
 export interface MessageTemplate {
