@@ -38,6 +38,9 @@ export interface Profile {
   niche: string;
   plan: PlanId;
   billing_cycle: BillingCycle;
+  /** Plano que o usuário pretende contratar (o acesso é definido por `plan`, só o servidor altera). */
+  desired_plan: PlanId;
+  desired_cycle: BillingCycle;
   trial_ends_at: string;
   onboarding_completed_at: string | null;
   monthly_report_opt_in: boolean;
@@ -47,7 +50,12 @@ export interface Profile {
 export type ProfileUpdate = Partial<
   Pick<
     Profile,
-    'full_name' | 'business_name' | 'plan' | 'billing_cycle' | 'onboarding_completed_at' | 'monthly_report_opt_in'
+    | 'full_name'
+    | 'business_name'
+    | 'desired_plan'
+    | 'desired_cycle'
+    | 'onboarding_completed_at'
+    | 'monthly_report_opt_in'
   >
 >;
 
