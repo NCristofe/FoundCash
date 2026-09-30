@@ -42,7 +42,18 @@ export function OnboardingPage() {
     <div className="onboarding">
       <header className="onboarding-head">
         <p className="page-kicker">Boas-vindas{firstName ? `, ${firstName}` : ''}</p>
-        <h1 className="page-title">Vamos encontrar o dinheiro parado nas suas propostas.</h1>
+        <h1 className="page-title">Vamos ligar o radar da sua operação comercial.</h1>
+        <ol className="onboarding-steps" aria-label="Como funciona">
+          <li>
+            <strong>Cadastre</strong> suas oportunidades
+          </li>
+          <li>
+            <strong>O FoundCash encontra</strong> o que precisa de atenção
+          </li>
+          <li>
+            <strong>Recupere</strong> e acompanhe seu dinheiro em jogo
+          </li>
+        </ol>
         <p className="text-muted">
           {niche.onboardingPrompt} Cadastre as {ONBOARDING_TARGET} primeiras — leva menos de 15 segundos cada.
         </p>
@@ -63,7 +74,7 @@ export function OnboardingPage() {
           <strong>
             {count} de {ONBOARDING_TARGET}
           </strong>{' '}
-          propostas · <span className="text-green">{formatCurrency(total)}</span> encontrados
+          oportunidades · <span className="text-green">{formatCurrency(total)}</span> em jogo
         </p>
       </div>
 
@@ -72,10 +83,10 @@ export function OnboardingPage() {
           {done ? (
             <div className="onboarding-done" role="status">
               <PartyPopper size={40} aria-hidden="true" />
-              <h2>Você encontrou {formatCurrency(total)} em propostas paradas.</h2>
+              <h2>Você tem {formatCurrency(total)} em jogo.</h2>
               <p className="text-muted">
-                A partir de agora, o FoundCash avisa quem precisa de um novo contato. Quando uma proposta virar
-                venda, marque “Fechou negócio” para ver seu dinheiro recuperado.
+                No painel, o radar mostra quanto desse valor está sem acompanhamento e quem precisa de contato hoje.
+                Quando uma venda sair, marque “Fechou negócio”.
               </p>
               <button type="button" className="btn btn-primary btn-lg" disabled={finishing} onClick={finish}>
                 Ir para o meu painel <ArrowRight className="icon-arrow" size={18} aria-hidden="true" />
