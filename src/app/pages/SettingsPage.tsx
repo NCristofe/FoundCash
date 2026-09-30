@@ -5,6 +5,7 @@ import { useUI } from '../../context/useUI';
 import { billingCycleLabels, priceFor, pricingPlans, type BillingCycle, type PlanId } from '../../data/pricing';
 import { friendlyError } from '../../lib/supabase';
 import { navigate } from '../../router/router';
+import { PLAN_PRICING } from '../../../supabase/functions/_shared/plans.ts';
 
 const dateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
@@ -35,8 +36,8 @@ export function SettingsPage() {
   };
 
   const choosePlan = (plan: PlanId, cycle: BillingCycle) => {
-    if (plan === profile.plan && cycle === profile.billing_cycle) return;
-    void save({ plan, billing_cycle: cycle }, 'Plano atualizado.');
+    if (plan === profile.desired_plan && cycle === profile.desired_cycle) return;
+    void save({ desired_plan: plan, desired_cycle: cycle }, 'Preferência de plano salva.');
   };
 
   const handleSignOut = async () => {
@@ -73,8 +74,9 @@ export function SettingsPage() {
           Plano
         </h2>
         <p className="text-muted">
-          Teste grátis até {dateFormatter.format(new Date(profile.trial_ends_at))}. A cobrança ainda não está
-          integrada: durante o teste você pode trocar de plano livremente.
+          Teste grátis até {dateFormatter.format(new Date(profile.trial_ends_at))}. Plano em uso:{' '}
+          <strong>{PLAN_PRICING[profile.plan].name}</strong>. Abaixo você escolhe o plano que pretende contratar; a
+          ativação do Pro é feita pela nossa equipe até a cobrança automática ficar pronta.
         </p>
 
         <div className="settings-cycle segmented" role="radiogroup" aria-label="Ciclo de cobrança">
@@ -83,9 +85,9 @@ export function SettingsPage() {
               key={cycle}
               type="button"
               role="radio"
-              aria-checked={profile.billing_cycle === cycle}
+              aria-checked={profile.desired_cycle === cycle}
               disabled={saving}
-              onClick={() => choosePlan(profile.plan, cycle)}
+              onClick={() => choosePlan(profile.desired_plan, cycle)}
             >
               {billingCycleLabels[cycle]}
             </button>
@@ -94,7 +96,7 @@ export function SettingsPage() {
 
         <div className="settings-plans">
           {pricingPlans.map((plan) => {
-            const selected = profile.plan === plan.id;
+            const selected = profile.desired_plan === plan.id;
             return (
               <button
                 key={plan.id}
@@ -102,10 +104,10 @@ export function SettingsPage() {
                 className={`settings-plan ${selected ? 'is-selected' : ''}`}
                 aria-pressed={selected}
                 disabled={saving}
-                onClick={() => choosePlan(plan.id, profile.billing_cycle)}
+                onClick={() => choosePlan(plan.id, profile.desired_cycle)}
               >
                 <span className="settings-plan-name">{plan.name}</span>
-                <span className="settings-plan-price">R$ {priceFor(plan, profile.billing_cycle)}/mês</span>
+                <span className="settings-plan-price">R$ {priceFor(plan, profile.desired_cycle)}/mês</span>
                 <span className="settings-plan-desc">{plan.features.slice(0, 3).join(' · ')}</span>
               </button>
             );
