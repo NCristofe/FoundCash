@@ -1,8 +1,8 @@
 /** Quantas oportunidades o onboarding pede para cadastrar. */
 export const ONBOARDING_TARGET = 5;
 
-/** Quantas oportunidades aparecem no painel de prioridade. */
-export const PRIORITY_COUNT = 3;
+/** Quantas ações aparecem em "O que fazer hoje". */
+export const ACTIONS_COUNT = 6;
 
 /** Link para a "sessão de ajuda" oferecida aos primeiros usuários (vazio = oculto). */
 export const HELP_SESSION_URL = import.meta.env.VITE_HELP_SESSION_URL ?? '';
