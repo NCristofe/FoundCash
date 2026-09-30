@@ -13,12 +13,21 @@ import type {
 const PROPOSALS_BUCKET = 'proposals';
 
 export type OpportunityChanges = Partial<
-  Pick<Opportunity, 'client_name' | 'whatsapp' | 'value' | 'follow_up_on' | 'status' | 'loss_reason' | 'last_contact_at'>
+  Omit<Opportunity, 'id' | 'user_id' | 'closed_at' | 'created_at' | 'updated_at' | 'stage_changed_at'>
 >;
+
+const numberOrNull = (value: unknown) => (value === null || value === undefined ? null : Number(value));
 
 /** O Postgres devolve `numeric` como string; normalizamos para number. */
 function toOpportunity(row: Record<string, unknown>): Opportunity {
-  return { ...(row as unknown as Opportunity), value: Number(row.value) };
+  return {
+    ...(row as unknown as Opportunity),
+    stage: (row.stage as Opportunity['stage'] | undefined) ?? 'proposta',
+    stage_changed_at: (row.stage_changed_at as string | undefined) ?? (row.created_at as string),
+    value: Number(row.value),
+    monthly_kwh: numberOrNull(row.monthly_kwh),
+    system_kwp: numberOrNull(row.system_kwp),
+  };
 }
 
 export async function fetchOpportunities(): Promise<Opportunity[]> {
