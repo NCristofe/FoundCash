@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { friendlyError } from '../../lib/supabase';
-import type { MessageTemplate, NewOpportunity, Opportunity } from '../../lib/types';
+import type { MessageTemplate, NewOpportunity, Opportunity, ProposalLink } from '../../lib/types';
 import { OpportunityDialog } from '../components/OpportunityDialog';
 import { QuickEntryDialog } from '../components/QuickEntryDialog';
 import * as api from '../services/api';
@@ -15,15 +15,22 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [customTemplates, setCustomTemplates] = useState<MessageTemplate[]>([]);
+  const [proposalLinks, setProposalLinks] = useState<ProposalLink[]>([]);
   const [quickEntryOpen, setQuickEntryOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
     setError(null);
     try {
-      const [items, templates] = await Promise.all([api.fetchOpportunities(), api.fetchTemplates()]);
+      const [items, templates, links] = await Promise.all([
+        api.fetchOpportunities(),
+        api.fetchTemplates(),
+        // Os links enriquecem o radar, mas não podem derrubar o painel.
+        api.fetchProposalLinks().catch(() => [] as ProposalLink[]),
+      ]);
       setOpportunities(items);
       setCustomTemplates(templates);
+      setProposalLinks(links);
     } catch (loadError) {
       setError(friendlyError(loadError));
     } finally {
@@ -53,6 +60,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setSelectedId((current) => (current === id ? null : current));
   }, []);
 
+  const saveProposalLink = useCallback((link: ProposalLink) => {
+    setProposalLinks((current) => [...current.filter((item) => item.opportunity_id !== link.opportunity_id), link]);
+  }, []);
+
   const openQuickEntry = useCallback(() => setQuickEntryOpen(true), []);
   const openOpportunity = useCallback((id: string) => setSelectedId(id), []);
 
@@ -67,6 +78,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       removeOpportunity,
       customTemplates,
       setCustomTemplates,
+      proposalLinks,
+      saveProposalLink,
       openQuickEntry,
       openOpportunity,
     }),
@@ -79,6 +92,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       updateOpportunity,
       removeOpportunity,
       customTemplates,
+      proposalLinks,
+      saveProposalLink,
       openQuickEntry,
       openOpportunity,
     ],
