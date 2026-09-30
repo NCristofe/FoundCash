@@ -2,10 +2,10 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { CalendarDays, FileUp, Loader2, MessageCircle } from 'lucide-react';
 import { FormField } from '../../components/common/FormField';
 import { FOLLOW_UP_SHORTCUTS } from '../../config/app';
-import { niche } from '../../config/niche';
+import { niche, stages } from '../../config/niche';
 import { useUI } from '../../context/useUI';
 import { friendlyError } from '../../lib/supabase';
-import type { Opportunity } from '../../lib/types';
+import type { Opportunity, Stage } from '../../lib/types';
 import { addDaysKey, formatDateKey, todayKey } from '../../utils/dates';
 import { formatCurrency } from '../../utils/format';
 import { formatPhone, parseClientInput, parseCurrencyInput } from '../../utils/parsing';
@@ -37,6 +37,7 @@ export function QuickEntryForm({ onSaved, allowAnother = false, idPrefix = 'qe' 
   const [valueText, setValueText] = useState('');
   const [shortcutDays, setShortcutDays] = useState<number | null>(DEFAULT_SHORTCUT_DAYS);
   const [customDate, setCustomDate] = useState('');
+  const [stage, setStage] = useState<Stage>('proposta');
   const [errors, setErrors] = useState<Errors>({});
   const [saving, setSaving] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -69,12 +70,14 @@ export function QuickEntryForm({ onSaved, allowAnother = false, idPrefix = 'qe' 
         whatsapp,
         value: parsedValue,
         follow_up_on: followUpOn,
+        stage,
       });
       showToast(`${created.client_name} · ${formatCurrency(created.value)} adicionada.`);
       setClient('');
       setValueText('');
       setShortcutDays(DEFAULT_SHORTCUT_DAYS);
       setCustomDate('');
+      setStage('proposta');
       setPdfWhatsapp(null);
       clientRef.current?.focus();
       onSaved?.(created, keepOpen);
@@ -183,7 +186,25 @@ export function QuickEntryForm({ onSaved, allowAnother = false, idPrefix = 'qe' 
       />
 
       <fieldset className="quick-entry-dates">
-        <legend>Follow-up</legend>
+        <legend>Em que etapa está?</legend>
+        <div className="chips" role="radiogroup" aria-label="Etapa comercial">
+          {stages.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              role="radio"
+              className="chip"
+              aria-checked={stage === option.id}
+              onClick={() => setStage(option.id)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="quick-entry-dates">
+        <legend>Próximo follow-up</legend>
         <div className="chips" role="radiogroup" aria-label="Quando fazer o follow-up">
           {FOLLOW_UP_SHORTCUTS.map((shortcut) => (
             <button
