@@ -2,18 +2,29 @@ import { useEffect, useState } from 'react';
 import { Check, Copy, ExternalLink, Eye, Link2, MessageCircle, PartyPopper, RotateCcw, Trash2, Upload, XCircle } from 'lucide-react';
 import { Badge } from '../../components/common/Badge';
 import { FOLLOW_UP_SHORTCUTS } from '../../config/app';
-import { builtInTemplates, fillTemplate, lossReasonLabels } from '../../config/niche';
+import { builtInTemplates, fillTemplate, lossReasonLabels, stageById, stages } from '../../config/niche';
 import { useUI } from '../../context/useUI';
 import { friendlyError } from '../../lib/supabase';
-import type { EventKind, LossReason, Opportunity, OpportunityEvent, ProposalLink, ProposalResponse } from '../../lib/types';
+import type {
+  EventKind,
+  LossReason,
+  Opportunity,
+  OpportunityEvent,
+  ProposalLink,
+  ProposalResponse,
+  Stage,
+} from '../../lib/types';
 import { addDaysKey, describeFollowUp, daysFromToday, formatDateTime } from '../../utils/dates';
 import { formatCurrency } from '../../utils/format';
 import { formatPhone, whatsappLink } from '../../utils/parsing';
-import { fetchEvents, fetchProposalLinks, proposalUrl, saveProposalFile, type OpportunityChanges } from '../services/api';
+import { fetchEvents, proposalUrl, saveProposalFile, type OpportunityChanges } from '../services/api';
+import { analyze } from '../radar';
 import { useAppData } from '../state/useAppData';
 import { Dialog } from './Dialog';
+import { ProjectDetails } from './ProjectDetails';
 
 const eventLabels: Record<EventKind, string> = {
+  stage_changed: 'Etapa alterada',
   created: 'Oportunidade cadastrada',
   contacted: 'Contato registrado',
   rescheduled: 'Follow-up reagendado',
@@ -51,7 +62,7 @@ export function OpportunityDialog({ opportunity, onClose }: OpportunityDialogPro
 }
 
 function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
-  const { updateOpportunity, removeOpportunity, customTemplates } = useAppData();
+  const { updateOpportunity, removeOpportunity, customTemplates, proposalLinks, saveProposalLink } = useAppData();
   const { showToast } = useUI();
 
   const templates = [...builtInTemplates, ...customTemplates];
@@ -61,11 +72,12 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [events, setEvents] = useState<OpportunityEvent[] | null>(null);
-  const [proposalLink, setProposalLink] = useState<ProposalLink | null | undefined>(undefined);
   const [uploading, setUploading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const { id, status, updated_at: updatedAt } = opportunity;
+  const proposalLink: ProposalLink | undefined = proposalLinks.find((link) => link.opportunity_id === id);
+  const signals = analyze([opportunity], proposalLinks)[0]?.signals ?? [];
 
   // Recarrega o histórico sempre que a oportunidade muda.
   useEffect(() => {
@@ -78,23 +90,11 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
     };
   }, [id, updatedAt]);
 
-  // Carrega o link rastreável desta oportunidade.
-  useEffect(() => {
-    let cancelled = false;
-    fetchProposalLinks()
-      .then((links) => {
-        if (cancelled) return;
-        setProposalLink(links.find((l) => l.opportunity_id === id) ?? null);
-      })
-      .catch(() => !cancelled && setProposalLink(null));
-    return () => { cancelled = true; };
-  }, [id]);
-
   const handleUploadPdf = async (file: File) => {
     setUploading(true);
     try {
       const link = await saveProposalFile(id, file);
-      setProposalLink(link);
+      saveProposalLink(link);
       showToast('PDF enviado. Link rastreável pronto!');
     } catch (error) {
       showToast(friendlyError(error), 'error');
@@ -139,8 +139,13 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
       `Contato registrado. Próximo follow-up: ${describeFollowUp(addDaysKey(nextDays)).toLowerCase()}.`,
     );
 
+  const handleStage = (stage: Stage) => {
+    if (stage === opportunity.stage) return;
+    void run({ stage }, `Movida para ${stageById[stage].label.toLowerCase()}.`);
+  };
+
   const handleWon = () =>
-    run({ status: 'won' }, `Venda recuperada: ${formatCurrency(opportunity.value)} somados ao seu mês!`);
+    run({ status: 'won' }, `Venda fechada: ${formatCurrency(opportunity.value)} somados ao seu mês!`);
 
   const handleLost = () => {
     if (!lossReason) {
@@ -177,7 +182,9 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
   return (
     <div className="opportunity">
       <div className="opportunity-summary">
-        <p className="opportunity-value tabular">{formatCurrency(opportunity.value)}</p>
+        <p className={`opportunity-value tabular ${status === 'won' ? 'is-won' : ''}`}>
+          {formatCurrency(opportunity.value)}
+        </p>
         <div className="opportunity-meta">
           {status === 'open' && (
             <Badge tone={overdue ? 'red' : daysFromToday(opportunity.follow_up_on) === 0 ? 'yellow' : 'neutral'}>
@@ -190,7 +197,37 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
           )}
           {opportunity.whatsapp && <span className="text-muted">{formatPhone(opportunity.whatsapp)}</span>}
         </div>
+        {status === 'open' && signals.length > 0 && (
+          <ul className="opportunity-signals" aria-label="Sinais do radar">
+            {signals.map((signal) => (
+              <li key={signal.kind} className={signal.risk ? 'is-risk' : 'is-hot'}>
+                {signal.text}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
+
+      {status === 'open' && (
+        <section className="opportunity-block" aria-labelledby="op-etapa">
+          <h3 id="op-etapa">Etapa comercial</h3>
+          <div className="chips" role="radiogroup" aria-label="Etapa comercial">
+            {stages.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                role="radio"
+                className="chip"
+                disabled={busy}
+                aria-checked={opportunity.stage === option.id}
+                onClick={() => handleStage(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {status === 'open' && (
         <>
@@ -289,12 +326,12 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
         </div>
       )}
 
+      <ProjectDetails opportunity={opportunity} />
+
       <section className="opportunity-block" aria-labelledby="op-proposta">
         <h3 id="op-proposta">Proposta rastreável</h3>
 
-        {proposalLink === undefined ? (
-          <p className="text-muted">Carregando…</p>
-        ) : proposalLink ? (
+        {proposalLink ? (
           <div className="proposal-link-box">
             {proposalLink.response ? (
               <div className="proposal-link-response">
