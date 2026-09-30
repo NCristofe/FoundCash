@@ -107,8 +107,7 @@ export function DashboardPage() {
       <header className="page-head">
         <div>
           <p className="page-kicker">
-            <span className="live-dot" aria-hidden="true" /> Radar comercial{profile.business_name ? ` · ${profile.business_name}` : ''}
-          </p>
+            <span className="live-dot" aria-hidden="true" /> Radar comercial{profile.business_name ? ` · ${profile.business_name}` : ''}</p>
           <h1 className="page-title">
             {greeting()}
             {firstName ? `, ${firstName}` : ''}
