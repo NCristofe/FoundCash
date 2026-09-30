@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { MessageTemplate, NewOpportunity, Opportunity } from '../../lib/types';
+import type { MessageTemplate, NewOpportunity, Opportunity, ProposalLink } from '../../lib/types';
 import type { OpportunityChanges } from '../services/api';
 
 export interface AppDataContextValue {
@@ -14,6 +14,10 @@ export interface AppDataContextValue {
   /** Scripts personalizados (Pro). Os scripts padrão ficam em config/niche.ts. */
   customTemplates: MessageTemplate[];
   setCustomTemplates: (templates: MessageTemplate[]) => void;
+
+  /** Links rastreáveis das propostas (visitas e respostas do cliente alimentam o radar). */
+  proposalLinks: ProposalLink[];
+  saveProposalLink: (link: ProposalLink) => void;
 
   openQuickEntry: () => void;
   openOpportunity: (id: string) => void;
