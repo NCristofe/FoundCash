@@ -15,9 +15,10 @@ import { SettingsPage } from './pages/SettingsPage';
 import { AppDataProvider } from './state/AppDataProvider';
 import { useAppData } from './state/useAppData';
 import './app.css';
+import './radar.css';
 
 const navItems = [
-  { to: '/app', label: 'Painel' },
+  { to: '/app', label: 'Radar' },
   { to: '/app/relatorio', label: 'Relatório' },
   { to: '/app/scripts', label: 'Scripts' },
   { to: '/app/perdas', label: 'Perdas' },
