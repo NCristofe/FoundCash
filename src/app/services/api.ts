@@ -103,6 +103,11 @@ export function proposalUrl(token: string): string {
   return `${window.location.origin}/p/${token}`;
 }
 
+/** Abre a proposta como o cliente vê, sem contar visita nem permitir resposta. */
+export function proposalPreviewUrl(token: string): string {
+  return `${proposalUrl(token)}?preview=1`;
+}
+
 export function proposalFileUrl(filePath: string): string {
   return requireSupabase().storage.from(PROPOSALS_BUCKET).getPublicUrl(filePath).data.publicUrl;
 }
