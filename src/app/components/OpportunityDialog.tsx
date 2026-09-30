@@ -247,7 +247,7 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
             <div className="opportunity-actions">
               {opportunity.whatsapp ? (
                 <a
-                  className="btn btn-primary opportunity-primary"
+                  className="btn btn-whatsapp opportunity-primary"
                   href={whatsappLink(opportunity.whatsapp, message)}
                   target="_blank"
                   rel="noreferrer"
