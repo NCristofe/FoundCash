@@ -17,7 +17,7 @@ import type {
 import { addDaysKey, describeFollowUp, daysFromToday, formatDateTime } from '../../utils/dates';
 import { formatCurrency } from '../../utils/format';
 import { formatPhone, whatsappLink } from '../../utils/parsing';
-import { fetchEvents, proposalUrl, saveProposalFile, type OpportunityChanges } from '../services/api';
+import { fetchEvents, proposalPreviewUrl, proposalUrl, saveProposalFile, type OpportunityChanges } from '../services/api';
 import { analyze } from '../radar';
 import { useAppData } from '../state/useAppData';
 import { Dialog } from './Dialog';
@@ -355,7 +355,7 @@ function OpportunityDetails({ opportunity }: { opportunity: Opportunity }) {
               </button>
               <a
                 className="btn btn-secondary btn-sm"
-                href={proposalUrl(proposalLink.token)}
+                href={proposalPreviewUrl(proposalLink.token)}
                 target="_blank"
                 rel="noreferrer"
               >
