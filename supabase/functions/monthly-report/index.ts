@@ -21,8 +21,8 @@ const BRT_OFFSET_HOURS = 3; // America/Sao_Paulo (UTC-3, sem horário de verão)
 interface ProfileRow {
   id: string;
   full_name: string;
-  plan: PlanId;
-  billing_cycle: BillingCycle;
+  desired_plan: PlanId;
+  desired_cycle: BillingCycle;
   trial_ends_at: string;
 }
 
@@ -149,7 +149,7 @@ Deno.serve(async (request) => {
 
   const { data: profiles, error: profilesError } = await supabase
     .from('profiles')
-    .select('id, full_name, plan, billing_cycle, trial_ends_at')
+    .select('id, full_name, desired_plan, desired_cycle, trial_ends_at')
     .eq('monthly_report_opt_in', true);
   if (profilesError) return Response.json({ error: profilesError.message }, { status: 500 });
 
@@ -183,7 +183,7 @@ Deno.serve(async (request) => {
 
     const recovered = (won ?? []).reduce((sum, row) => sum + Number(row.value), 0);
     const openTotal = (open ?? []).reduce((sum, row) => sum + Number(row.value), 0);
-    const cost = monthlyCost(profile.plan, profile.billing_cycle);
+    const cost = monthlyCost(profile.desired_plan, profile.desired_cycle);
     const roi = roiMultiple(recovered, cost);
     const inTrial = new Date(profile.trial_ends_at) >= new Date(month.endIso);
 
