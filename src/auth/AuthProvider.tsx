@@ -11,6 +11,16 @@ interface ProfileState {
   error: string | null;
 }
 
+/** Antes da migração de segurança as colunas `desired_*` não existem: cai para o plano em uso. */
+function normalizeProfile(row: Partial<Profile> | null): Profile | null {
+  if (!row) return null;
+  return {
+    ...(row as Profile),
+    desired_plan: row.desired_plan ?? row.plan ?? 'essencial',
+    desired_cycle: row.desired_cycle ?? row.billing_cycle ?? 'monthly',
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(supabase ? undefined : null);
   const [profileState, setProfileState] = useState<ProfileState | null>(null);
@@ -34,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .single()
       .then(({ data, error }) => {
         if (cancelled) return;
-        setProfileState({ userId, profile: (data as Profile | null) ?? null, error: error?.message ?? null });
+        setProfileState({ userId, profile: normalizeProfile(data), error: error?.message ?? null });
       });
 
     return () => {
@@ -52,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!supabase || !userId) return;
       const { data, error } = await supabase.from('profiles').update(changes).eq('id', userId).select('*').single();
       if (error) throw error;
-      setProfileState({ userId, profile: data as Profile, error: null });
+      setProfileState({ userId, profile: normalizeProfile(data), error: null });
     },
     [userId],
   );
