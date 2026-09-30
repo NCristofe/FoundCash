@@ -4,9 +4,7 @@
  */
 import { monthlyCost, roiMultiple } from '../../supabase/functions/_shared/plans.ts';
 import type { LossReason, Opportunity, Profile } from '../lib/types';
-import { daysFromToday, isInCurrentMonth } from '../utils/dates';
-
-export type PrioritySort = 'value' | 'date';
+import { isInCurrentMonth } from '../utils/dates';
 
 const sum = (items: Opportunity[]) => items.reduce((total, item) => total + item.value, 0);
 
@@ -27,22 +25,6 @@ export function recoveredThisMonth(items: Opportunity[]) {
 export function subscriptionRoi(recovered: number, profile: Profile) {
   const cost = monthlyCost(profile.plan, profile.billing_cycle);
   return { cost, roi: roiMultiple(recovered, cost) };
-}
-
-/** Oportunidades com follow-up para hoje ou atrasadas, ordenadas por valor ou por data. */
-export function priorityToday(items: Opportunity[], sort: PrioritySort, limit: number): Opportunity[] {
-  const due = openOpportunities(items).filter((item) => daysFromToday(item.follow_up_on) <= 0);
-
-  return due
-    .sort((a, b) => {
-      if (sort === 'value') return b.value - a.value || a.follow_up_on.localeCompare(b.follow_up_on);
-      return a.follow_up_on.localeCompare(b.follow_up_on) || b.value - a.value;
-    })
-    .slice(0, limit);
-}
-
-export function dueCount(items: Opportunity[]): number {
-  return openOpportunities(items).filter((item) => daysFromToday(item.follow_up_on) <= 0).length;
 }
 
 export function lossReport(items: Opportunity[]) {
