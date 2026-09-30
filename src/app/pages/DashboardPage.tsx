@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
-import { ArrowRight, MessageCircle, Plus, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
+import { FileUp, Plus, X } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
 import { Badge } from '../../components/common/Badge';
 import { CountUp } from '../../components/common/CountUp';
 import { ACTIONS_COUNT } from '../../config/app';
-import { builtInTemplates, fillTemplate, lossReasonLabels, stageById } from '../../config/niche';
-import { PLAN_PRICING } from '../../../supabase/functions/_shared/plans.ts';
+import { lossReasonLabels, stageById } from '../../config/niche';
+import { useUI } from '../../context/useUI';
+import { friendlyError } from '../../lib/supabase';
 import type { Opportunity, OpportunityStatus, Stage } from '../../lib/types';
+import { PLAN_PRICING } from '../../../supabase/functions/_shared/plans.ts';
 import { Link } from '../../router/Link';
 import { currentMonthLabel, describeFollowUp, formatDateKey } from '../../utils/dates';
 import { formatCurrency } from '../../utils/format';
-import { whatsappLink } from '../../utils/parsing';
-import { RadarLoader, RadarScope, SignalMeter } from '../components/RadarUI';
-import { recoveredThisMonth, subscriptionRoi } from '../metrics';
+import { ActionDeck } from '../components/ActionDeck';
+import { burst, RadarLoader, RingGauge, ScoreRing, Sparkline, WeekBars } from '../components/RadarUI';
+import { openValueHistory, recoveredThisMonth, subscriptionRoi, wonByWeekThisMonth } from '../metrics';
 import {
   analyze,
   conversion,
@@ -21,6 +23,7 @@ import {
   pipelineByStage,
   radarSummary,
   todayActions,
+  type Analysis,
 } from '../radar';
 import { useAppData } from '../state/useAppData';
 
@@ -31,19 +34,14 @@ function greeting(): string {
   return 'Boa noite';
 }
 
-function quickMessage(opportunity: Opportunity): string {
-  const firstName = opportunity.client_name.startsWith('WhatsApp') ? '' : opportunity.client_name.split(' ')[0];
-  return fillTemplate(builtInTemplates[0].body, {
-    cliente: firstName,
-    valor: formatCurrency(opportunity.value),
-  }).replace(/,\s*!/g, '!');
-}
-
 function projectMeta(item: Opportunity): string {
   return [item.city, item.system_kwp ? `${item.system_kwp.toLocaleString('pt-BR')} kWp` : null, item.seller]
     .filter(Boolean)
     .join(' · ');
 }
+
+/** Tons de jade do mais frio (lead) ao mais quente (negociação). */
+const STAGE_SHADES = ['#1b3a31', '#155a44', '#0b6b4c', '#0c8660', '#0fa372', '#22bd89', '#34d8a0'];
 
 const tabs: Array<{ status: OpportunityStatus; label: string }> = [
   { status: 'open', label: 'Abertas' },
@@ -51,13 +49,59 @@ const tabs: Array<{ status: OpportunityStatus; label: string }> = [
   { status: 'lost', label: 'Perdidas' },
 ];
 
+/** Luz que segue o cursor nos cartões `.spot` e leve inclinação nos `.tilt`. */
+function useSpotlight() {
+  const last = useRef<HTMLElement | null>(null);
+  const reset = (card: HTMLElement | null) => {
+    if (!card) return;
+    card.style.removeProperty('--mx');
+    card.style.removeProperty('transform');
+  };
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'mouse') return;
+    const card = (event.target as HTMLElement).closest<HTMLElement>('.spot');
+    if (card !== last.current) {
+      reset(last.current);
+      last.current = card;
+    }
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    card.style.setProperty('--mx', `${x}px`);
+    card.style.setProperty('--my', `${y}px`);
+    if (card.classList.contains('tilt') && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const rotateX = (y / rect.height - 0.5) * -6;
+      const rotateY = (x / rect.width - 0.5) * 6;
+      card.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-2px)`;
+    }
+  };
+  const onPointerLeave = () => {
+    reset(last.current);
+    last.current = null;
+  };
+  return { onPointerMove, onPointerLeave };
+}
+
 export function DashboardPage() {
   const { profile } = useAuth();
-  const { opportunities, proposalLinks, loading, error, reload, openQuickEntry, openOpportunity } = useAppData();
+  const { opportunities, proposalLinks, loading, error, reload, openQuickEntry, openOpportunity, updateOpportunity } =
+    useAppData();
+  const { showToast } = useUI();
   const [tab, setTab] = useState<OpportunityStatus>('open');
   const [stageFilter, setStageFilter] = useState<Stage | null>(null);
+  const [ready, setReady] = useState(false);
+  const burstRef = useRef<HTMLCanvasElement>(null);
+  const spotlight = useSpotlight();
 
   const analyses = useMemo(() => analyze(opportunities, proposalLinks), [opportunities, proposalLinks]);
+
+  // Um quadro depois de montar, as barras e anéis animam do zero até o valor.
+  useEffect(() => {
+    if (loading) return;
+    const timer = window.setTimeout(() => setReady(true), 250);
+    return () => window.clearTimeout(timer);
+  }, [loading]);
 
   if (!profile) return null;
 
@@ -81,10 +125,14 @@ export function DashboardPage() {
   const recovered = recoveredThisMonth(opportunities);
   const { cost, roi } = subscriptionRoi(recovered.total, profile);
   const conv = conversion(opportunities);
+  const history = openValueHistory(opportunities);
+  const twoWeeksDelta = history[history.length - 1] - history[history.length - 3];
+  const weekly = wonByWeekThisMonth(opportunities);
   const openLimit = PLAN_PRICING[profile.plan].openLimit;
   const firstName = profile.full_name.split(' ')[0];
-  const riskShare = summary.openTotal > 0 ? Math.round((summary.riskTotal / summary.openTotal) * 100) : 0;
+  const riskShare = summary.openTotal > 0 ? summary.riskTotal / summary.openTotal : 0;
   const scoreById = new Map(analyses.map((item) => [item.opportunity.id, item.score]));
+  const hasHistory = opportunities.length > 0;
   const nextPlanned = analyses
     .filter((item) => !item.action)
     .sort((a, b) => a.opportunity.follow_up_on.localeCompare(b.opportunity.follow_up_on))[0];
@@ -102,236 +150,235 @@ export function DashboardPage() {
     document.getElementById('todas-titulo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const markWon = async ({ opportunity }: Analysis) => {
+    try {
+      await updateOpportunity(opportunity.id, { status: 'won' });
+      burst(burstRef.current);
+      showToast(`Venda fechada: ${formatCurrency(opportunity.value)} somados a ${currentMonthLabel()}.`);
+    } catch (saveError) {
+      showToast(friendlyError(saveError), 'error');
+      throw saveError;
+    }
+  };
+
   return (
-    <div className="dashboard">
-      <header className="page-head">
-        <div>
-          <p className="page-kicker">
-            <span className="live-dot" aria-hidden="true" /> Radar comercial{profile.business_name ? ` · ${profile.business_name}` : ''}</p>
-          <h1 className="page-title">
-            {greeting()}
-            {firstName ? `, ${firstName}` : ''}
-          </h1>
-        </div>
+    <div className="dashboard" {...spotlight}>
+      <header className="dash-greet enter">
+        <h1 className="page-title">
+          {greeting()}
+          {firstName ? `, ${firstName}` : ''}
+        </h1>
+        <span className="live">Radar atualizado agora</span>
       </header>
 
-      <section className={`radar-hero ${summary.riskCount > 0 ? 'is-alert' : ''}`} aria-labelledby="radar-titulo">
-        <div className="radar-hero-copy">
-          {summary.openCount === 0 ? (
+      <div className="dash-grid">
+        <section className={`hero-card enter ${summary.riskCount > 0 ? '' : 'is-calm'}`} aria-labelledby="hero-titulo">
+          <canvas className="hero-burst" ref={burstRef} aria-hidden="true" />
+          {!hasHistory ? (
             <>
-              <p className="radar-hero-label" id="radar-titulo">
-                Radar vazio
-              </p>
-              <p className="radar-hero-title">Cadastre suas oportunidades e o FoundCash mostra onde está o dinheiro parado.</p>
-              <ol className="radar-steps">
-                <li>Cadastre as propostas e leads em andamento.</li>
-                <li>O radar encontra o que ficou sem acompanhamento.</li>
-                <li>Você age na ordem certa e acompanha o que recuperou.</li>
+              <div>
+                <p className="hero-label" id="hero-titulo">
+                  Seu radar está pronto
+                </p>
+                <p className="hero-title">Cadastre suas oportunidades e veja onde está o dinheiro parado.</p>
+              </div>
+              <ol className="hero-steps">
+                <li>Cadastre as propostas e leads em andamento</li>
+                <li>O FoundCash encontra o que ficou sem acompanhamento</li>
+                <li>Você age na ordem certa e acompanha o que fechou</li>
               </ol>
-              <button type="button" className="btn btn-primary" onClick={openQuickEntry}>
-                <Plus size={18} aria-hidden="true" /> Cadastrar oportunidade
-              </button>
-            </>
-          ) : summary.riskCount > 0 ? (
-            <>
-              <p className="radar-hero-label" id="radar-titulo">
-                Dinheiro sem acompanhamento
-              </p>
-              <CountUp className="radar-hero-value is-risk" value={summary.riskTotal} format="currency" start />
-              <p className="radar-hero-text">
-                {summary.riskCount === 1
-                  ? '1 oportunidade mostra'
-                  : `${summary.riskCount} de ${summary.openCount} oportunidades mostram`}{' '}
-                sinais de abandono: follow-up vencido, proposta sem retorno ou etapa que não avança.
-              </p>
-              <a className="btn btn-primary" href="#hoje">
-                Ver o que fazer hoje <ArrowRight className="icon-arrow" size={18} aria-hidden="true" />
-              </a>
+              <div className="hero-actions">
+                <button type="button" className="hero-btn" onClick={openQuickEntry}>
+                  <Plus size={18} aria-hidden="true" /> Cadastrar oportunidade
+                </button>
+              </div>
             </>
           ) : (
             <>
-              <p className="radar-hero-label is-ok" id="radar-titulo">
-                Nenhuma oportunidade esquecida
-              </p>
-              <CountUp className="radar-hero-value" value={summary.openTotal} format="currency" start />
-              <p className="radar-hero-text">
-                Todas as {summary.openCount} oportunidades abertas têm um próximo passo marcado. O radar avisa quando alguma
-                esfriar.
-              </p>
+              <div className="hero-top">
+                <div>
+                  <p className="hero-label" id="hero-titulo">
+                    {summary.riskCount > 0 ? 'Dinheiro sem acompanhamento' : 'Dinheiro em jogo'}
+                  </p>
+                  <CountUp
+                    className="hero-value"
+                    value={summary.riskCount > 0 ? summary.riskTotal : summary.openTotal}
+                    format="currency"
+                    start
+                  />
+                  <p className="hero-sub">
+                    {summary.riskCount > 0
+                      ? `${summary.riskCount} de ${summary.openCount} ${summary.openCount === 1 ? 'oportunidade precisa' : 'oportunidades precisam'} de você`
+                      : summary.openCount > 0
+                        ? `Todas as ${summary.openCount} oportunidades abertas têm próximo passo marcado`
+                        : 'Nenhuma oportunidade aberta agora'}
+                  </p>
+                </div>
+                <span className={`hero-chip ${summary.riskCount > 0 ? 'is-warn' : ''}`}>
+                  {summary.riskCount > 0 ? `${summary.riskCount} em risco` : 'Tudo em dia'}
+                </span>
+              </div>
+              {summary.openCount > 0 && (
+                <div className="hero-meter">
+                  <div className="hero-meter-track">
+                    <span className="hero-meter-fill" style={{ width: ready ? `${riskShare * 100}%` : 0 }} />
+                  </div>
+                  <div className="hero-meter-legend tabular">
+                    <span>{formatCurrency(summary.riskTotal)} em risco</span>
+                    <span>{formatCurrency(summary.openTotal)} em jogo</span>
+                  </div>
+                </div>
+              )}
+              <div className="hero-actions">
+                {actions.length > 0 && (
+                  <a className="hero-btn" href="#hoje">
+                    Ver o que fazer hoje
+                  </a>
+                )}
+                <button type="button" className="hero-btn-glass" onClick={openQuickEntry}>
+                  <FileUp size={16} aria-hidden="true" /> Nova oportunidade ou PDF
+                </button>
+              </div>
             </>
           )}
-        </div>
-        {summary.openCount > 0 && (
-          <figure className="radar-hero-scope">
-            <RadarScope analyses={analyses} />
-            <figcaption>
-              <span className="legend legend--risk">Sem acompanhamento</span>
-              <span className="legend legend--hot">Cliente engajado</span>
-              <span className="legend legend--ok">Em dia</span>
-              <span className="radar-caption-note">Distância do centro = dias sem contato</span>
-            </figcaption>
-          </figure>
-        )}
-      </section>
+        </section>
 
-      {summary.openCount > 0 && (
-        <dl className="meters" aria-label="Números da operação">
-          <div className="meter">
-            <dt>Dinheiro em jogo</dt>
-            <dd className="meter-value tabular">{formatCurrency(summary.openTotal)}</dd>
-            <dd className="meter-foot">
-              {summary.openCount} {summary.openCount === 1 ? 'oportunidade aberta' : 'oportunidades abertas'}
-              {openLimit !== null && summary.openCount >= openLimit * 0.9 && (
-                <span className="text-warning"> · limite do plano: {openLimit}</span>
-              )}
-            </dd>
-          </div>
-          <div className={`meter ${summary.riskTotal > 0 ? 'meter--risk' : ''}`}>
-            <dt>Em risco</dt>
-            <dd className="meter-value tabular">{formatCurrency(summary.riskTotal)}</dd>
-            <dd className="meter-foot">{summary.riskTotal > 0 ? `${riskShare}% do dinheiro em jogo` : 'Nada em risco agora'}</dd>
-          </div>
-          <div className="meter meter--won">
-            <dt>Fechado em {currentMonthLabel()}</dt>
-            <dd className="meter-value tabular">{formatCurrency(recovered.total)}</dd>
-            <dd className="meter-foot">
-              {recovered.total > 0
-                ? `${recovered.count} ${recovered.count === 1 ? 'venda' : 'vendas'} · ${roi.toLocaleString('pt-BR')}x a assinatura (${formatCurrency(cost)})`
-                : 'Marque “Fechou negócio” quando uma venda sair.'}
-            </dd>
-          </div>
-          <div className="meter">
-            <dt>Conversão</dt>
-            <dd className="meter-value tabular">{conv.rate === null ? '—' : `${conv.rate}%`}</dd>
-            <dd className="meter-foot">
-              {conv.rate === null
-                ? `Aparece com ${MIN_CLOSED_FOR_CONVERSION} negócios encerrados (${conv.closed} até agora)`
-                : `das ${conv.closed} oportunidades encerradas`}
-            </dd>
-          </div>
-        </dl>
-      )}
-
-      {summary.openCount > 0 && (
-        <div className="dash-grid">
-          <section className="panel panel--actions" id="hoje" aria-labelledby="hoje-titulo">
-            <div className="panel-head">
-              <div>
-                <h2 id="hoje-titulo" className="panel-title">
-                  O que fazer hoje
-                </h2>
-                <p className="panel-subtitle">Em ordem de prioridade, pelo que está cadastrado.</p>
-              </div>
+        {hasHistory && (
+          <section className="spot queue enter" id="hoje" aria-labelledby="hoje-titulo" style={{ '--d': '80ms' } as CSSProperties}>
+            <div className="queue-head">
+              <h2 id="hoje-titulo" className="panel-title">
+                Fila de hoje
+              </h2>
+              <span>{actions.length ? `${actions.length} na fila` : 'Tudo feito'}</span>
             </div>
-
-            {actions.length === 0 ? (
-              <div className="panel-empty">
-                <p>Nada pendente hoje.</p>
-                {nextPlanned && (
-                  <p>
-                    Próximo passo: <strong>{nextPlanned.opportunity.client_name}</strong> —{' '}
-                    {describeFollowUp(nextPlanned.opportunity.follow_up_on).toLowerCase()}.
-                  </p>
-                )}
-              </div>
-            ) : (
-              <ol className="action-list">
-                {actions.map(({ opportunity: item, score, action, atRisk }) => (
-                  <li key={item.id} className={`action ${atRisk ? 'is-risk' : 'is-hot'}`}>
-                    <SignalMeter score={score} />
-                    <div className="action-copy">
-                      <p className="action-title">{action?.title}</p>
-                      <p className="action-detail">{action?.detail}</p>
-                    </div>
-                    <div className="action-buttons">
-                      {item.whatsapp && (
-                        <a
-                          className="btn btn-primary btn-sm"
-                          href={whatsappLink(item.whatsapp, quickMessage(item))}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`Chamar ${item.client_name} no WhatsApp`}
-                        >
-                          <MessageCircle size={16} aria-hidden="true" />
-                          <span className="app-hide-mobile">WhatsApp</span>
-                        </a>
-                      )}
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => openOpportunity(item.id)}
-                        aria-label={`Abrir oportunidade de ${item.client_name}`}
-                      >
-                        Abrir
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+            <ActionDeck actions={actions} onOpen={openOpportunity} onWon={markWon} />
+            {actions.length === 0 && nextPlanned && (
+              <p className="queue-next">
+                Próximo passo: <strong>{nextPlanned.opportunity.client_name}</strong>,{' '}
+                {describeFollowUp(nextPlanned.opportunity.follow_up_on).toLowerCase()}.
+              </p>
             )}
-            <p className="score-note">
-              Prioridade 0–100: indicador operacional calculado pelo valor, etapa, interesse, respostas do cliente e atrasos.
-              Não é previsão de fechamento.
-            </p>
           </section>
+        )}
 
-          <section className="panel panel--insights" aria-labelledby="leituras-titulo">
+        {hasHistory && (
+          <>
+            <article className="spot tilt stat enter" style={{ '--d': '140ms' } as CSSProperties}>
+              <small>Em jogo</small>
+              <span className="stat-big tabular">{formatCurrency(summary.openTotal)}</span>
+              <span className="stat-foot">
+                {twoWeeksDelta !== 0 ? (
+                  <>
+                    <b className={twoWeeksDelta > 0 ? '' : 'is-down'}>
+                      {twoWeeksDelta > 0 ? '+' : '−'}
+                      {formatCurrency(Math.abs(twoWeeksDelta))}
+                    </b>{' '}
+                    nas últimas 2 semanas
+                  </>
+                ) : (
+                  `${summary.openCount} ${summary.openCount === 1 ? 'oportunidade aberta' : 'oportunidades abertas'}`
+                )}
+                {openLimit !== null && summary.openCount >= openLimit * 0.9 && (
+                  <span className="text-warning"> · limite do plano: {openLimit}</span>
+                )}
+              </span>
+              <Sparkline values={history} />
+            </article>
+
+            <article className="spot tilt stat enter" style={{ '--d': '200ms' } as CSSProperties}>
+              <small>Conversão</small>
+              <div className="stat-ring">
+                <RingGauge
+                  ratio={ready ? (conv.rate === null ? conv.closed / MIN_CLOSED_FOR_CONVERSION : conv.rate / 100) : 0}
+                  label={conv.rate === null ? `${conv.closed}/${MIN_CLOSED_FOR_CONVERSION}` : `${conv.rate}%`}
+                />
+                <p className="stat-foot">
+                  {conv.rate === null
+                    ? `A taxa aparece com ${MIN_CLOSED_FOR_CONVERSION} oportunidades encerradas (ganhas ou perdidas).`
+                    : `das ${conv.closed} oportunidades encerradas viraram venda.`}
+                </p>
+              </div>
+            </article>
+
+            <article className="spot tilt stat enter" style={{ '--d': '260ms' } as CSSProperties}>
+              <small>Fechado em {currentMonthLabel()}</small>
+              <CountUp className="stat-big stat-big--jade" value={recovered.total} format="currency" start />
+              {recovered.total > 0 ? (
+                <span className="roi-pill">
+                  {roi.toLocaleString('pt-BR')}x a assinatura ({formatCurrency(cost)})
+                </span>
+              ) : (
+                <span className="stat-foot">Marque “Fechou” quando uma venda sair.</span>
+              )}
+              <WeekBars values={weekly} />
+            </article>
+          </>
+        )}
+
+        {summary.openCount > 0 && (
+          <section className="spot flow-card enter" aria-labelledby="fluxo-titulo" style={{ '--d': '320ms' } as CSSProperties}>
+            <div>
+              <h2 id="fluxo-titulo" className="panel-title">
+                Onde está o dinheiro
+              </h2>
+              <p className="panel-subtitle">Toque numa etapa para ver as oportunidades dela.</p>
+            </div>
+            <div className="flow-bar">
+              {flow.map((row, index) =>
+                row.count === 0 ? null : (
+                  <button
+                    key={row.stage.id}
+                    type="button"
+                    className={`${row.riskCount > 0 ? 'has-risk' : ''} ${stageFilter === row.stage.id ? 'is-selected' : ''}`}
+                    style={{ '--c': STAGE_SHADES[index], flexGrow: ready ? row.value || 1 : 0 } as CSSProperties}
+                    aria-pressed={stageFilter === row.stage.id}
+                    aria-label={`${row.stage.label}: ${formatCurrency(row.value)}, ${row.count} ${row.count === 1 ? 'oportunidade' : 'oportunidades'}`}
+                    onClick={() => filterByStage(row.stage.id)}
+                  />
+                ),
+              )}
+            </div>
+            <ul className="flow-legend">
+              {flow.map((row, index) =>
+                row.count === 0 ? null : (
+                  <li key={row.stage.id} style={{ '--c': STAGE_SHADES[index] } as CSSProperties}>
+                    {row.stage.label}
+                    <b className="tabular">{formatCurrency(row.value)}</b>
+                    <span>
+                      {row.count} {row.count === 1 ? 'oportunidade' : 'oportunidades'}
+                      {row.riskCount > 0 && <em> · {row.riskCount} em risco</em>}
+                    </span>
+                  </li>
+                ),
+              )}
+            </ul>
+          </section>
+        )}
+
+        {hasHistory && (
+          <section className="spot reads-card enter" aria-labelledby="leituras-titulo" style={{ '--d': '380ms' } as CSSProperties}>
             <h2 id="leituras-titulo" className="panel-title">
-              Leituras do radar
+              O que o FoundCash percebeu
             </h2>
             {readings.length === 0 ? (
-              <p className="panel-empty">
+              <p className="panel-subtitle">
                 As leituras aparecem conforme você registra etapas, contatos, vendedores e motivos de perda.
               </p>
             ) : (
-              <ul className="insight-list">
-                {readings.map((reading) => (
-                  <li key={reading.id} className={`insight insight--${reading.tone}`}>
+              <ul className="reads">
+                {readings.map((reading, index) => (
+                  <li key={reading.id} className={`read read--${reading.tone} ${index === 0 ? 'is-lead' : ''}`}>
+                    {index === 0 && <span className="read-tag">Mais importante</span>}
                     {reading.text}
                   </li>
                 ))}
               </ul>
             )}
           </section>
-        </div>
-      )}
+        )}
+      </div>
 
-      {summary.openCount > 0 && (
-        <section className="panel" aria-labelledby="pipeline-titulo">
-          <div className="panel-head">
-            <div>
-              <h2 id="pipeline-titulo" className="panel-title">
-                Fluxo comercial
-              </h2>
-              <p className="panel-subtitle">Toque numa etapa para ver as oportunidades dela.</p>
-            </div>
-          </div>
-          <div className="flow-scroll">
-            <ol className="flow">
-              {flow.map((row) => (
-                <li key={row.stage.id}>
-                  <button
-                    type="button"
-                    className={`flow-node ${row.count === 0 ? 'is-empty' : ''} ${stageFilter === row.stage.id ? 'is-selected' : ''}`}
-                    aria-pressed={stageFilter === row.stage.id}
-                    onClick={() => filterByStage(row.stage.id)}
-                    disabled={row.count === 0}
-                  >
-                    <span className="flow-label">{row.stage.label}</span>
-                    <span className="flow-value tabular">{formatCurrency(row.value)}</span>
-                    <span className="flow-count">
-                      {row.count} {row.count === 1 ? 'oportunidade' : 'oportunidades'}
-                    </span>
-                    {row.riskCount > 0 && <span className="flow-risk">{row.riskCount} em risco</span>}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-      )}
-
-      <section className="panel" aria-labelledby="todas-titulo">
+      <section className="panel list-card" aria-labelledby="todas-titulo">
         <div className="panel-head">
           <h2 id="todas-titulo" className="panel-title">
             Oportunidades
@@ -383,7 +430,7 @@ export function DashboardPage() {
                         {item.status === 'open' && (
                           <>
                             <span className="stage-tag">{stageById[item.stage].short}</span>
-                            <SignalMeter score={scoreById.get(item.id) ?? 0} showValue={false} />
+                            <ScoreRing score={scoreById.get(item.id) ?? 0} size="sm" />
                           </>
                         )}
                         {item.status === 'won' && item.closed_at && (
@@ -408,7 +455,8 @@ export function DashboardPage() {
       </section>
 
       <p className="app-footnote">
-        Dica: pressione <kbd>N</kbd> em qualquer tela para cadastrar uma oportunidade. Veja por que as vendas não fecham em{' '}
+        Dica: pressione <kbd>N</kbd> em qualquer tela para cadastrar uma oportunidade. Prioridade 0–100 é um indicador
+        operacional calculado pelos seus dados, não uma previsão. Veja por que as vendas não fecham em{' '}
         <Link to="/app/perdas">Perdas</Link>.
       </p>
     </div>

@@ -1,123 +1,145 @@
-import { useId } from 'react';
-import { stages } from '../../config/niche';
-import type { Analysis } from '../radar';
+import { useId, type CSSProperties } from 'react';
 
-/** Prioridade 0–100 desenhada como intensidade de sinal. */
-export function SignalMeter({ score, showValue = true }: { score: number; showValue?: boolean }) {
-  const filled = Math.max(1, Math.ceil(score / 20));
-  const level = score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low';
+/** Prioridade 0–100 como anel. Coral a partir de 70 (agir primeiro). */
+export function ScoreRing({ score, size = 'md' }: { score: number; size?: 'sm' | 'md' }) {
+  const radius = 21;
+  const length = 2 * Math.PI * radius;
   return (
-    <span className={`signal signal--${level}`} role="img" aria-label={`Prioridade ${score} de 100`}>
-      <span className="signal-bars" aria-hidden="true">
-        {[1, 2, 3, 4, 5].map((bar) => (
-          <i key={bar} className={bar <= filled ? 'is-on' : ''} />
-        ))}
-      </span>
-      {showValue && (
-        <span className="signal-value" aria-hidden="true">
-          {score}
-        </span>
-      )}
+    <span className={`score-ring score-ring--${size}`} role="img" aria-label={`Prioridade ${score} de 100`}>
+      <svg viewBox="0 0 50 50" aria-hidden="true">
+        <circle cx="25" cy="25" r={radius} className="score-ring-track" />
+        <circle
+          cx="25"
+          cy="25"
+          r={radius}
+          className={`score-ring-fill ${score >= 70 ? 'is-high' : ''}`}
+          strokeDasharray={length}
+          strokeDashoffset={length * (1 - score / 100)}
+        />
+      </svg>
+      {size === 'md' && <b aria-hidden="true">{score}</b>}
     </span>
   );
 }
 
-const CENTER = 100;
-const INNER = 16;
-const OUTER = 84;
-/** Dias sem contato que levam o ponto até a borda. */
-const MAX_DAYS = 30;
-
-function hash(text: string): number {
-  let value = 0;
-  for (let index = 0; index < text.length; index += 1) value = (value * 31 + text.charCodeAt(index)) >>> 0;
-  return value;
-}
-
-function polar(angleDeg: number, radius: number) {
-  const angle = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: CENTER + radius * Math.cos(angle), y: CENTER + radius * Math.sin(angle) };
-}
-
-/**
- * Cada ponto é uma oportunidade aberta real: o setor é a etapa, a distância do
- * centro é o tempo sem contato e o tamanho é o valor.
- */
-export function RadarScope({ analyses }: { analyses: Analysis[] }) {
-  const gradientId = `sweep-${useId().replace(/:/g, '')}`;
-  const sector = 360 / stages.length;
-  const maxValue = Math.max(1, ...analyses.map((item) => item.opportunity.value));
-  const riskCount = analyses.filter((item) => item.atRisk).length;
+/** Linha com área, desenhada ao montar; o último ponto fica marcado. */
+export function Sparkline({ values }: { values: number[] }) {
+  const gradientId = `spark-${useId().replace(/:/g, '')}`;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const points = values.map((value, index) => [
+    (index / Math.max(1, values.length - 1)) * 300,
+    58 - ((value - min) / range) * 50,
+  ]);
+  const line = points.map(([x, y], index) => `${index ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+  const [lastX, lastY] = points[points.length - 1];
 
   return (
-    <svg
-      className="radar-scope"
-      viewBox="-12 -12 224 224"
-      role="img"
-      aria-label={`Radar: ${analyses.length} oportunidades abertas, ${riskCount} com sinais de abandono. Quanto mais longe do centro, mais tempo sem contato.`}
-    >
+    <svg className="spark" viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="var(--green)" stopOpacity="0" />
-          <stop offset="1" stopColor="var(--green)" stopOpacity="0.28" />
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#34d8a0" stopOpacity="0.35" />
+          <stop offset="1" stopColor="#34d8a0" stopOpacity="0" />
         </linearGradient>
       </defs>
-
-      {[INNER + (OUTER - INNER) * (3 / MAX_DAYS), INNER + (OUTER - INNER) * (10 / MAX_DAYS), OUTER].map((radius) => (
-        <circle key={radius} className="radar-ring" cx={CENTER} cy={CENTER} r={radius} />
-      ))}
-      {stages.map((stage, index) => {
-        const edge = polar(index * sector, OUTER);
-        const label = polar((index + 0.5) * sector, OUTER + 11);
-        return (
-          <g key={stage.id}>
-            <line className="radar-spoke" x1={CENTER} y1={CENTER} x2={edge.x} y2={edge.y} />
-            <text className="radar-label" x={label.x} y={label.y} textAnchor="middle" dominantBaseline="middle">
-              {stage.short}
-            </text>
-          </g>
-        );
-      })}
-      <text className="radar-ring-label" x={CENTER + 3} y={CENTER - (INNER + (OUTER - INNER) * 0.1) - 2}>
-        3d
-      </text>
-      <text className="radar-ring-label" x={CENTER + 3} y={CENTER - (INNER + (OUTER - INNER) * (10 / MAX_DAYS)) - 2}>
-        10d
-      </text>
-      <text className="radar-ring-label" x={CENTER + 3} y={CENTER - OUTER - 2}>
-        30d+
-      </text>
-
-      <g className="radar-sweep">
-        <path d={`M${CENTER} ${CENTER} L${CENTER} ${CENTER - OUTER} A${OUTER} ${OUTER} 0 0 1 ${polar(50, OUTER).x} ${polar(50, OUTER).y} Z`} fill={`url(#${gradientId})`} />
-        <line className="radar-sweep-edge" x1={CENTER} y1={CENTER} x2={polar(50, OUTER).x} y2={polar(50, OUTER).y} />
-      </g>
-
-      {analyses.map((item) => {
-        const index = stages.findIndex((stage) => stage.id === item.opportunity.stage);
-        const jitter = ((hash(item.opportunity.id) % 1000) / 1000 - 0.5) * 0.7;
-        const distance = INNER + (Math.min(item.daysSinceTouch, MAX_DAYS) / MAX_DAYS) * (OUTER - INNER);
-        const point = polar((index + 0.5 + jitter) * sector, distance);
-        const size = 2.4 + 4.2 * Math.sqrt(item.opportunity.value / maxValue);
-        const hot = item.signals.some((signal) => signal.kind === 'responded' || signal.kind === 'viewed');
-        const tone = item.atRisk ? 'risk' : hot ? 'hot' : 'ok';
-        return (
-          <g key={item.opportunity.id} className={`radar-blip radar-blip--${tone}`}>
-            {tone !== 'ok' && <circle className="radar-blip-pulse" cx={point.x} cy={point.y} r={size} />}
-            <circle cx={point.x} cy={point.y} r={size} />
-          </g>
-        );
-      })}
-
-      <circle className="radar-core" cx={CENTER} cy={CENTER} r="3" />
+      <path d={`${line} L300 64 L0 64 Z`} fill={`url(#${gradientId})`} />
+      <path className="spark-line" d={line} pathLength={1} />
+      <circle className="spark-dot" cx={lastX} cy={lastY} r="4.5" />
     </svg>
   );
+}
+
+/** Anel de progresso (0–1). */
+export function RingGauge({ ratio, label }: { ratio: number; label: string }) {
+  const gradientId = `ring-${useId().replace(/:/g, '')}`;
+  const length = 2 * Math.PI * 38;
+  return (
+    <svg className="ring" viewBox="0 0 92 92" aria-hidden="true">
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#34d8a0" />
+          <stop offset="1" stopColor="#0fa372" />
+        </linearGradient>
+      </defs>
+      <circle className="ring-track" cx="46" cy="46" r="38" />
+      <circle
+        className="ring-fill"
+        cx="46"
+        cy="46"
+        r="38"
+        stroke={`url(#${gradientId})`}
+        strokeDasharray={length}
+        style={{ '--ring-offset': length * (1 - Math.min(1, Math.max(0, ratio))), '--ring-length': length } as CSSProperties}
+      />
+      <text x="46" y="52" textAnchor="middle">
+        {label}
+      </text>
+    </svg>
+  );
+}
+
+/** Barras por semana; a maior fica em jade. */
+export function WeekBars({ values }: { values: number[] }) {
+  const max = Math.max(1, ...values);
+  return (
+    <div className="week-bars" aria-hidden="true">
+      {values.map((value, index) => (
+        <span key={index} className={value > 0 && value === max ? 'is-top' : value > 0 ? 'is-on' : ''}>
+          <i style={{ '--h': `${Math.max(6, (value / max) * 100)}%`, '--d': `${400 + index * 80}ms` } as CSSProperties} />
+          <small>S{index + 1}</small>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** Partículas jade saindo de um ponto do canvas (comemoração de venda fechada). */
+export function burst(canvas: HTMLCanvasElement | null) {
+  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rect = canvas.getBoundingClientRect();
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = rect.width * ratio;
+  canvas.height = rect.height * ratio;
+  const context = canvas.getContext('2d');
+  if (!context) return;
+  context.scale(ratio, ratio);
+  const colors = ['#34d8a0', '#eafff6', '#0fa372', '#b8ffe3'];
+  const particles = Array.from({ length: 80 }, () => ({
+    x: rect.width * 0.22,
+    y: rect.height * 0.42,
+    vx: (Math.random() * 2 - 0.4) * 7,
+    vy: (Math.random() * -1.2 - 0.2) * 7,
+    size: 2 + Math.random() * 4,
+    life: 1,
+    color: colors[Math.floor(Math.random() * colors.length)],
+  }));
+  const tick = () => {
+    context.clearRect(0, 0, rect.width, rect.height);
+    let alive = false;
+    particles.forEach((particle) => {
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      particle.vy += 0.22;
+      particle.life -= 0.016;
+      if (particle.life <= 0) return;
+      alive = true;
+      context.globalAlpha = particle.life;
+      context.fillStyle = particle.color;
+      context.beginPath();
+      context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      context.fill();
+    });
+    if (alive) requestAnimationFrame(tick);
+    else context.clearRect(0, 0, rect.width, rect.height);
+  };
+  tick();
 }
 
 export function RadarLoader({ label }: { label: string }) {
   return (
     <div className="radar-loader" role="status">
-      <span className="radar-loader-scope" aria-hidden="true" />
+      <span className="radar-loader-dot" aria-hidden="true" />
       <span>{label}</span>
     </div>
   );

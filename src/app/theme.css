@@ -1,0 +1,173 @@
+/* ==========================================================================
+   FoundCash — identidade do app: jade (estilo app de banco).
+   Jade = marca e dinheiro que volta · coral = dinheiro em risco.
+   ========================================================================== */
+
+.fc-app {
+  --jade: #0fa372;
+  --jade-bright: #34d8a0;
+  --jade-deep: #064a36;
+  --coral: #ff6b5b;
+
+  --bg: #070b0a;
+  --bg-2: #0b1110;
+  --card: #0e1513;
+  --card-2: #141e1b;
+  --border: rgba(220, 255, 240, 0.08);
+  --border-strong: rgba(220, 255, 240, 0.16);
+  --white: #eef5f2;
+  --muted: #8fa39c;
+  --muted-2: #6f817b;
+
+  --green: var(--jade-bright);
+  --green-2: var(--jade);
+  --green-soft: rgba(52, 216, 160, 0.12);
+  --green-line: rgba(52, 216, 160, 0.35);
+  --yellow: var(--coral);
+  --yellow-soft: rgba(255, 107, 91, 0.12);
+  --red: #f0525f;
+  --red-soft: rgba(240, 82, 95, 0.12);
+
+  --hover: rgba(220, 255, 240, 0.05);
+  --active: rgba(220, 255, 240, 0.09);
+  --inset: rgba(0, 0, 0, 0.22);
+  --track: rgba(220, 255, 240, 0.1);
+  --track-strong: rgba(220, 255, 240, 0.25);
+  --header-bg: rgba(7, 11, 10, 0.82);
+  --backdrop: rgba(0, 0, 0, 0.66);
+  --bubble: #0f4a36;
+
+  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 26px;
+  --shadow-float: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 40px 80px -30px rgba(0, 0, 0, 0.85);
+
+  --font: 'Manrope', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 520px at 8% -8%, rgba(15, 163, 114, 0.13), transparent 60%),
+    var(--bg);
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 0.975rem;
+}
+
+html:has(.fc-app),
+html:has(.fc-app) body {
+  background: #070b0a;
+}
+
+.fc-app ::selection {
+  background: rgba(52, 216, 160, 0.3);
+}
+
+.fc-app :focus-visible {
+  outline-color: var(--jade-bright);
+}
+
+.fc-app .page-title,
+.fc-app .panel-title {
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+
+.fc-app .panel {
+  border-radius: var(--radius-xl);
+}
+
+/* Marca */
+.fc-app .logo-mark {
+  filter: drop-shadow(0 6px 14px rgba(15, 163, 114, 0.35));
+}
+
+.fc-app .logo-mark rect {
+  fill: var(--jade);
+}
+
+.fc-app .logo-mark path {
+  stroke: #03261b;
+}
+
+.fc-app .logo-mark circle {
+  fill: #03261b;
+}
+
+/* Botões em pílula */
+.fc-app .btn {
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.fc-app .btn-primary {
+  background: var(--white);
+  color: var(--bg);
+  box-shadow: none;
+}
+
+.fc-app .btn-primary:hover {
+  background: #ffffff;
+  box-shadow: 0 10px 24px -12px rgba(52, 216, 160, 0.6);
+}
+
+.fc-app .btn-secondary {
+  background: var(--card-2);
+  border-color: var(--border-strong);
+}
+
+.fc-app .btn-whatsapp {
+  background: #1fa855;
+  color: #fff;
+}
+
+.fc-app .btn-whatsapp:hover {
+  background: #23bd60;
+}
+
+.fc-app .btn-jade {
+  border: 1px solid var(--green-line);
+  background: var(--green-soft);
+  color: var(--jade-bright);
+}
+
+.fc-app .btn-jade:hover {
+  background: rgba(52, 216, 160, 0.2);
+}
+
+/* Formulários */
+.fc-app .field input,
+.fc-app .field select,
+.fc-app .field textarea,
+.fc-app .input {
+  border-radius: var(--radius);
+  background: var(--inset);
+}
+
+.fc-app .field select option {
+  background: var(--card);
+}
+
+.fc-app .field input:focus,
+.fc-app .field select:focus,
+.fc-app .field textarea:focus,
+.fc-app .input:focus {
+  border-color: var(--jade-bright);
+  box-shadow: 0 0 0 3px rgba(52, 216, 160, 0.2);
+}
+
+.fc-app .chip {
+  background: var(--card-2);
+}
+
+.fc-app .chip[aria-pressed='true'],
+.fc-app .chip[aria-checked='true'] {
+  border-color: var(--jade-bright);
+  background: var(--green-soft);
+  color: var(--jade-bright);
+}
+
+.fc-app .badge--red {
+  --badge-color: #ff8a93;
+}
