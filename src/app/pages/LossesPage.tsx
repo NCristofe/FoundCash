@@ -4,6 +4,7 @@ import { formatDateKey } from '../../utils/dates';
 import { formatCurrency } from '../../utils/format';
 import { ProLock } from '../components/ProLock';
 import { lossReport } from '../metrics';
+import { lossesByStage } from '../radar';
 import { useAppData } from '../state/useAppData';
 
 /** Relatório avançado de perdas (plano Pro): quanto se perde e por quê. */
@@ -14,8 +15,8 @@ export function LossesPage() {
   const header = (
     <header className="page-head">
       <div>
-        <p className="page-kicker">Relatório de perdas</p>
-        <h1 className="page-title">Por que as propostas não fecham</h1>
+        <p className="page-kicker">Diagnóstico de perdas</p>
+        <h1 className="page-title">Por que estamos perdendo vendas?</h1>
       </div>
     </header>
   );
@@ -31,6 +32,8 @@ export function LossesPage() {
 
   const report = lossReport(opportunities);
   const maxValue = Math.max(1, ...report.reasons.map((item) => item.value));
+  const stageLosses = lossesByStage(opportunities);
+  const maxStageValue = Math.max(1, ...stageLosses.map((row) => row.value));
 
   return (
     <div className="losses">
@@ -56,7 +59,9 @@ export function LossesPage() {
           Valor perdido por motivo
         </h2>
         {report.reasons.length === 0 ? (
-          <p className="text-muted">Nenhuma proposta perdida registrada. Ótimo sinal.</p>
+          <p className="text-muted">
+            Nenhuma perda registrada ainda. Ao marcar uma oportunidade como perdida, o motivo aparece aqui.
+          </p>
         ) : (
           <ul className="loss-bars">
             {report.reasons.map((item) => (
@@ -75,6 +80,30 @@ export function LossesPage() {
           </ul>
         )}
       </section>
+
+      {stageLosses.length > 0 && (
+        <section className="panel" aria-labelledby="etapa-titulo">
+          <h2 id="etapa-titulo" className="panel-title">
+            Em que etapa a venda se perde
+          </h2>
+          <p className="panel-subtitle">Etapa em que a oportunidade estava quando foi marcada como perdida.</p>
+          <ul className="loss-bars">
+            {stageLosses.map((row) => (
+              <li key={row.stage.id}>
+                <div className="loss-bars-label">
+                  <span>{row.stage.label}</span>
+                  <span className="tabular">
+                    {formatCurrency(row.value)} · {row.count}
+                  </span>
+                </div>
+                <div className="loss-bars-track" aria-hidden="true">
+                  <span style={{ width: `${(row.value / maxStageValue) * 100}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {report.recent.length > 0 && (
         <section className="panel" aria-labelledby="recentes-titulo">
