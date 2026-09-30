@@ -14,6 +14,7 @@ import { ScriptsPage } from './pages/ScriptsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AppDataProvider } from './state/AppDataProvider';
 import { useAppData } from './state/useAppData';
+import './theme.css';
 import './app.css';
 import './radar.css';
 
@@ -27,10 +28,12 @@ const navItems = [
 
 function FullScreenMessage({ children }: { children: ReactNode }) {
   return (
-    <main className="app-fullscreen">
-      <LogoMark size={40} />
-      {children}
-    </main>
+    <div className="fc-app">
+      <main className="app-fullscreen">
+        <LogoMark size={40} />
+        {children}
+      </main>
+    </div>
   );
 }
 
@@ -77,9 +80,11 @@ export function AppShell({ pathname }: { pathname: string }) {
   }
 
   return (
-    <AppDataProvider>
-      <AppLayout pathname={pathname} profile={profile} />
-    </AppDataProvider>
+    <div className="fc-app">
+      <AppDataProvider>
+        <AppLayout pathname={pathname} profile={profile} />
+      </AppDataProvider>
+    </div>
   );
 }
 
