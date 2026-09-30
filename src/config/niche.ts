@@ -3,7 +3,7 @@
  * Textos do app, scripts padrão e motivos de perda ficam aqui para facilitar
  * a troca de nicho no futuro.
  */
-import type { LossReason, MessageTemplate } from '../lib/types';
+import type { ClientType, Interest, LeadSource, LossReason, MessageTemplate, Stage } from '../lib/types';
 
 export const niche = {
   id: 'energia_solar',
@@ -13,16 +13,63 @@ export const niche = {
   clientPlaceholder: 'Ex.: Carlos Mendes ou wa.me/5511987654321',
   valuePlaceholder: 'Ex.: 28.500',
   onboardingPrompt:
-    'Pense nas propostas de sistemas fotovoltaicos que você enviou nos últimos 60 dias e que ficaram sem resposta.',
+    'Comece pelas oportunidades em aberto: propostas que você enviou, leads em visita ou negociação e clientes que ficaram sem resposta.',
 };
 
 export const lossReasonLabels: Record<LossReason, string> = {
-  preco: 'Achou caro',
+  preco: 'Preço',
   concorrente: 'Fechou com concorrente',
-  financiamento: 'Financiamento não aprovado',
+  financiamento: 'Financiamento',
+  desistiu: 'Cliente desistiu',
+  sem_resposta: 'Sem retorno do cliente',
+  tecnico: 'Problema técnico (telhado, rede, inversão de fluxo)',
+  prazo: 'Prazo de instalação',
   adiou: 'Adiou a decisão',
-  sem_resposta: 'Nunca respondeu',
   outro: 'Outro motivo',
+};
+
+/**
+ * Etapas comerciais de uma integradora. `touchDays` = dias sem contato até a
+ * oportunidade entrar no radar; `stallDays` = dias na mesma etapa até ser
+ * considerada parada. São limites operacionais, ajustáveis após validar com usuários.
+ */
+export const stages: Array<{ id: Stage; label: string; short: string; touchDays: number; stallDays: number }> = [
+  { id: 'novo_lead', label: 'Novo lead', short: 'Lead', touchDays: 1, stallDays: 3 },
+  { id: 'qualificacao', label: 'Qualificação', short: 'Qualificação', touchDays: 3, stallDays: 7 },
+  { id: 'contato', label: 'Contato realizado', short: 'Contato', touchDays: 4, stallDays: 7 },
+  { id: 'visita', label: 'Visita / diagnóstico', short: 'Visita', touchDays: 4, stallDays: 7 },
+  { id: 'proposta', label: 'Proposta enviada', short: 'Proposta', touchDays: 3, stallDays: 10 },
+  { id: 'follow_up', label: 'Follow-up', short: 'Follow-up', touchDays: 5, stallDays: 14 },
+  { id: 'negociacao', label: 'Negociação', short: 'Negociação', touchDays: 3, stallDays: 10 },
+];
+
+export const stageById = Object.fromEntries(stages.map((stage) => [stage.id, stage])) as Record<
+  Stage,
+  (typeof stages)[number]
+>;
+
+export const clientTypeLabels: Record<ClientType, string> = {
+  residencial: 'Residencial',
+  comercial: 'Comercial',
+  rural: 'Rural',
+  industrial: 'Industrial',
+};
+
+export const leadSourceLabels: Record<LeadSource, string> = {
+  indicacao: 'Indicação',
+  instagram: 'Instagram',
+  google: 'Google',
+  whatsapp: 'WhatsApp',
+  site: 'Site',
+  porta_a_porta: 'Porta a porta',
+  parceiro: 'Parceiro',
+  outro: 'Outro',
+};
+
+export const interestLabels: Record<Interest, string> = {
+  alto: 'Alto',
+  medio: 'Médio',
+  baixo: 'Baixo',
 };
 
 /**
