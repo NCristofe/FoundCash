@@ -23,7 +23,7 @@ export function recoveredThisMonth(items: Opportunity[]) {
 }
 
 export function subscriptionRoi(recovered: number, profile: Profile) {
-  const cost = monthlyCost(profile.plan, profile.billing_cycle);
+  const cost = monthlyCost(profile.desired_plan, profile.desired_cycle);
   return { cost, roi: roiMultiple(recovered, cost) };
 }
 
