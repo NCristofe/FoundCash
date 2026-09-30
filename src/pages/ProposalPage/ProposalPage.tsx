@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { LogoMark } from '../../components/common/Logo';
 import { supabase } from '../../lib/supabase';
+import { useLocation } from '../../router/router';
 import type { ProposalResponse, PublicProposal } from '../../lib/types';
 import { formatCurrency } from '../../utils/format';
 import './ProposalPage.css';
@@ -38,6 +39,7 @@ export function ProposalPage({ token }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const tracked = useRef(false);
+  const preview = useLocation().searchParams.get('preview') === '1';
 
   useEffect(() => {
     if (!token || tracked.current) return;
@@ -52,7 +54,7 @@ export function ProposalPage({ token }: Props) {
 
     (async () => {
       try {
-        const { data, error: rpcError } = await client.rpc('open_proposal', { p_token: token, p_track: true });
+        const { data, error: rpcError } = await client.rpc('open_proposal', { p_token: token, p_track: !preview });
         if (rpcError) throw rpcError;
         const row = (data as PublicProposal[] | null)?.[0];
         if (!row) {
@@ -70,7 +72,7 @@ export function ProposalPage({ token }: Props) {
   }, [token]);
 
   const handleRespond = async (response: ProposalResponse) => {
-    if (!supabase || submitting || done) return;
+    if (!supabase || submitting || done || preview) return;
     setSubmitting(true);
     try {
       const { error: rpcError } = await supabase.rpc('respond_proposal', {
@@ -132,6 +134,12 @@ export function ProposalPage({ token }: Props) {
         )}
       </header>
 
+      {preview && (
+        <p className="proposal-preview-banner" role="status">
+          Pré-visualização: esta abertura não é contada e as respostas ficam desativadas.
+        </p>
+      )}
+
       <div className="proposal-viewer">
         {pdfUrl && (
           <iframe
@@ -166,7 +174,7 @@ export function ProposalPage({ token }: Props) {
                 key={opt.key}
                 type="button"
                 className={`proposal-btn ${opt.cls}`}
-                disabled={submitting}
+                disabled={submitting || preview}
                 onClick={() => handleRespond(opt.key)}
               >
                 <span className="proposal-btn-icon">{opt.icon}</span>
