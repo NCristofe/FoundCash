@@ -29,7 +29,7 @@ Stack: React 18 + TypeScript + Vite (CSS puro, ícones Lucide) · Supabase (Post
 ### 1. Supabase
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
-2. Rode as migrações, em ordem, no **SQL Editor** (ou `supabase db push` com a CLI): `20260928000000_init.sql`, `20260929000000_proposal_links.sql` e `20260930000000_pipeline_radar.sql` (etapas do pipeline e dados do projeto solar; o app não salva oportunidades sem ela).
+2. Rode as migrações, em ordem, no **SQL Editor** (ou `supabase db push` com a CLI): `20260928000000_init.sql`, `20260929000000_proposal_links.sql`, `20260930000000_pipeline_radar.sql` e `20261001000000_security_hardening.sql` (etapas do pipeline e dados do projeto solar; o app não salva oportunidades sem ela).
 3. Em **Authentication → URL Configuration**, defina o *Site URL* (ex.: `http://localhost:5173` em dev) e adicione em *Redirect URLs*:
    - `http://localhost:5173/app/boas-vindas`
    - `http://localhost:5173/redefinir-senha`
