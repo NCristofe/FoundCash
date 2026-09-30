@@ -3,7 +3,20 @@ import type { BillingCycle, PlanId } from '../../supabase/functions/_shared/plan
 export type { BillingCycle, PlanId };
 
 export type OpportunityStatus = 'open' | 'won' | 'lost';
-export type LossReason = 'preco' | 'concorrente' | 'financiamento' | 'adiou' | 'sem_resposta' | 'outro';
+export type Stage = 'novo_lead' | 'qualificacao' | 'contato' | 'visita' | 'proposta' | 'follow_up' | 'negociacao';
+export type ClientType = 'residencial' | 'comercial' | 'rural' | 'industrial';
+export type LeadSource = 'indicacao' | 'instagram' | 'google' | 'whatsapp' | 'site' | 'porta_a_porta' | 'parceiro' | 'outro';
+export type Interest = 'alto' | 'medio' | 'baixo';
+export type LossReason =
+  | 'preco'
+  | 'concorrente'
+  | 'financiamento'
+  | 'desistiu'
+  | 'sem_resposta'
+  | 'tecnico'
+  | 'prazo'
+  | 'adiou'
+  | 'outro';
 export type EventKind =
   | 'created'
   | 'contacted'
@@ -12,7 +25,8 @@ export type EventKind =
   | 'lost'
   | 'reopened'
   | 'viewed'
-  | 'responded';
+  | 'responded'
+  | 'stage_changed';
 
 /** Resposta do cliente na página da proposta. */
 export type ProposalResponse = 'quero_fechar' | 'duvida' | 'caro' | 'pensar';
@@ -52,6 +66,18 @@ export interface Opportunity {
   closed_at: string | null;
   created_at: string;
   updated_at: string;
+  stage: Stage;
+  stage_changed_at: string;
+  city: string | null;
+  client_type: ClientType | null;
+  monthly_kwh: number | null;
+  system_kwp: number | null;
+  seller: string | null;
+  lead_source: LeadSource | null;
+  interest: Interest | null;
+  /** Data (YYYY-MM-DD) de validade da proposta. */
+  proposal_expires_on: string | null;
+  notes: string | null;
 }
 
 export interface NewOpportunity {
@@ -59,6 +85,7 @@ export interface NewOpportunity {
   whatsapp: string | null;
   value: number;
   follow_up_on: string;
+  stage: Stage;
 }
 
 export interface OpportunityEvent {
