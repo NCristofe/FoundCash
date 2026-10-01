@@ -62,7 +62,7 @@
 .input:focus {
   outline: none;
   border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 0 3px rgba(52, 216, 160, 0.2);
 }
 
 .field input[aria-invalid='true'] {
@@ -106,7 +106,7 @@
 
 .chip:hover {
   color: var(--white);
-  border-color: rgba(148, 163, 184, 0.4);
+  border-color: rgba(220, 255, 240, 0.4);
 }
 
 .chip[aria-pressed='true'],
