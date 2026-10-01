@@ -81,7 +81,7 @@
 .example-progress span {
   height: 6px;
   border-radius: 6px;
-  background: rgba(148, 163, 184, 0.14);
+  background: rgba(220, 255, 240, 0.14);
 }
 
 .example-progress .is-sent {
@@ -89,7 +89,7 @@
 }
 
 .example-progress .is-idle {
-  background: linear-gradient(90deg, rgba(245, 158, 11, 0.55), rgba(239, 68, 68, 0.6));
+  background: linear-gradient(90deg, rgba(255, 107, 91, 0.55), rgba(239, 68, 68, 0.6));
 }
 
 .example-progress-label {
@@ -107,9 +107,9 @@
   gap: 16px;
   padding: 32px;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(255, 107, 91, 0.3);
   background:
-    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(245, 158, 11, 0.1), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(255, 107, 91, 0.1), transparent 70%),
     var(--card);
   box-shadow: var(--shadow-card);
 }
