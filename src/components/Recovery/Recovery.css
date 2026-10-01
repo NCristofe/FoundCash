@@ -52,7 +52,7 @@
 .recovery-card--after {
   --card-accent: var(--green);
   background:
-    radial-gradient(ellipse 80% 70% at 50% 0%, rgba(34, 197, 94, 0.1), transparent 70%),
+    radial-gradient(ellipse 80% 70% at 50% 0%, rgba(52, 216, 160, 0.1), transparent 70%),
     var(--card);
 }
 
