@@ -11,6 +11,7 @@ import {
   type BillingCycle,
   type PlanId,
 } from '../../data/pricing';
+import { checkEmail } from '../../utils/emailCheck';
 import { friendlyError, isBackendConfigured, supabase } from '../../lib/supabase';
 import { Link } from '../../router/Link';
 import { navigate, useLocation } from '../../router/router';
@@ -57,6 +58,8 @@ export function AuthPage({ mode }: { mode: AuthPageMode }) {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [emailSuggestion, setEmailSuggestion] = useState<string | null>(null);
+  const [confirmedTypoFor, setConfirmedTypoFor] = useState<string | null>(null);
 
   // Quem já está logado não precisa ver login/cadastro.
   useEffect(() => {
@@ -92,6 +95,19 @@ export function AuthPage({ mode }: { mode: AuthPageMode }) {
 
     try {
       if (mode === 'signup') {
+        const check = await checkEmail(email);
+        if (check.status === 'invalid') {
+          setErrors({ email: check.message });
+          document.getElementById('auth-email')?.focus();
+          return;
+        }
+        if (check.status === 'typo' && confirmedTypoFor !== email.trim()) {
+          setEmailSuggestion(check.suggestion);
+          setErrors({ email: check.message });
+          document.getElementById('auth-email')?.focus();
+          return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
@@ -101,6 +117,11 @@ export function AuthPage({ mode }: { mode: AuthPageMode }) {
           },
         });
         if (error) throw error;
+        // Com confirmação por e-mail, o Supabase não dá erro para e-mail repetido: devolve `identities` vazio.
+        if (data.user && data.user.identities?.length === 0) {
+          setErrors({ email: 'Já existe uma conta com este e-mail. Tente entrar.' });
+          return;
+        }
         if (data.session) navigate('/app/boas-vindas', { replace: true });
         else setSentTo(email.trim());
       }
@@ -237,8 +258,39 @@ export function AuthPage({ mode }: { mode: AuthPageMode }) {
                 autoComplete="email"
                 value={email}
                 error={errors.email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setEmailSuggestion(null);
+                }}
               />
+            )}
+
+            {mode === 'signup' && emailSuggestion && (
+              <p className="field-hint">
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => {
+                    setEmail(emailSuggestion);
+                    setEmailSuggestion(null);
+                    setErrors({});
+                  }}
+                >
+                  Usar {emailSuggestion}
+                </button>
+                {' · '}
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => {
+                    setConfirmedTypoFor(email.trim());
+                    setEmailSuggestion(null);
+                    setErrors({});
+                  }}
+                >
+                  Manter como está
+                </button>
+              </p>
             )}
 
             {mode !== 'forgot' && (
