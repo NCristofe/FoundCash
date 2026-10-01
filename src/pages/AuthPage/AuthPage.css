@@ -14,7 +14,7 @@
   width: 800px;
   height: 500px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(34, 197, 94, 0.14), transparent);
+  background: radial-gradient(closest-side, rgba(52, 216, 160, 0.14), transparent);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -103,7 +103,7 @@
 }
 
 .auth-cycle button.is-active {
-  background: rgba(148, 163, 184, 0.14);
+  background: rgba(220, 255, 240, 0.14);
   color: var(--white);
 }
 
@@ -139,7 +139,7 @@
 
 .auth-plan.is-selected {
   border-color: var(--green);
-  background: rgba(34, 197, 94, 0.08);
+  background: rgba(52, 216, 160, 0.08);
 }
 
 .auth-plan-name {
