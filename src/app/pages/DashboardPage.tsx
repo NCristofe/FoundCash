@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
-import { FileUp, Plus, X } from 'lucide-react';
+import { AlertTriangle, Eye, FileUp, Plus, TrendingUp, Wallet, X } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
 import { Badge } from '../../components/common/Badge';
 import { CountUp } from '../../components/common/CountUp';
@@ -8,18 +9,15 @@ import { lossReasonLabels, stageById } from '../../config/niche';
 import { useUI } from '../../context/useUI';
 import { friendlyError } from '../../lib/supabase';
 import type { Opportunity, OpportunityStatus, Stage } from '../../lib/types';
-import { PLAN_PRICING } from '../../../supabase/functions/_shared/plans.ts';
 import { Link } from '../../router/Link';
 import { currentMonthLabel, describeFollowUp, formatDateKey } from '../../utils/dates';
 import { formatCurrency } from '../../utils/format';
 import { ActionDeck } from '../components/ActionDeck';
-import { burst, RadarLoader, RingGauge, ScoreRing, Sparkline, WeekBars } from '../components/RadarUI';
-import { openValueHistory, recoveredThisMonth, subscriptionRoi, wonByWeekThisMonth } from '../metrics';
+import { burst, RadarLoader, ScoreRing } from '../components/RadarUI';
+import { recoveredThisMonth, subscriptionRoi } from '../metrics';
 import {
   analyze,
-  conversion,
   insights as buildInsights,
-  MIN_CLOSED_FOR_CONVERSION,
   pipelineByStage,
   radarSummary,
   todayActions,
@@ -48,6 +46,32 @@ const tabs: Array<{ status: OpportunityStatus; label: string }> = [
   { status: 'won', label: 'Fechadas' },
   { status: 'lost', label: 'Perdidas' },
 ];
+
+interface KpiDef {
+  icon: LucideIcon;
+  label: string;
+  value: number;
+  format: 'currency' | 'percent' | 'number';
+  hint: string;
+  tone?: 'yellow' | 'green';
+}
+
+function KpiCard({ icon: Icon, label, value, format, hint, tone }: KpiDef) {
+  const display =
+    format === 'currency'
+      ? formatCurrency(value)
+      : format === 'percent'
+        ? `${value}%`
+        : value.toLocaleString('pt-BR');
+  return (
+    <article className={`kpi-card spot enter${tone ? ` kpi-card--${tone}` : ''}`}>
+      <span className="kpi-icon" aria-hidden="true"><Icon size={15} /></span>
+      <span className="kpi-label">{label}</span>
+      <span className="kpi-value">{display}</span>
+      <span className="kpi-hint">{hint}</span>
+    </article>
+  );
+}
 
 /** Luz que segue o cursor nos cartões `.spot` e leve inclinação nos `.tilt`. */
 function useSpotlight() {
@@ -123,12 +147,7 @@ export function DashboardPage() {
   const readings = buildInsights(opportunities, analyses);
   const flow = pipelineByStage(analyses);
   const recovered = recoveredThisMonth(opportunities);
-  const { cost, roi } = subscriptionRoi(recovered.total, profile);
-  const conv = conversion(opportunities);
-  const history = openValueHistory(opportunities);
-  const twoWeeksDelta = history[history.length - 1] - history[history.length - 3];
-  const weekly = wonByWeekThisMonth(opportunities);
-  const openLimit = PLAN_PRICING[profile.plan].openLimit;
+  const { roi } = subscriptionRoi(recovered.total, profile);
   const firstName = profile.full_name.split(' ')[0];
   const riskShare = summary.openTotal > 0 ? summary.riskTotal / summary.openTotal : 0;
   const scoreById = new Map(analyses.map((item) => [item.opportunity.id, item.score]));
@@ -161,6 +180,39 @@ export function DashboardPage() {
     }
   };
 
+  const kpis: KpiDef[] = [
+    {
+      icon: Wallet,
+      label: 'Em propostas',
+      value: summary.openTotal,
+      format: 'currency',
+      hint: `${summary.openCount} ${summary.openCount === 1 ? 'aberta' : 'abertas'}`,
+    },
+    {
+      icon: Eye,
+      label: 'Em acompanhamento',
+      value: summary.openCount - summary.riskCount,
+      format: 'number',
+      hint: summary.riskCount === 0 ? 'tudo no prazo' : `${summary.openCount - summary.riskCount} no prazo`,
+    },
+    {
+      icon: AlertTriangle,
+      label: 'Precisam de atenção',
+      value: summary.riskCount,
+      format: 'number',
+      hint: summary.riskCount > 0 ? `${formatCurrency(summary.riskTotal)} em risco` : 'Nenhuma',
+      tone: summary.riskCount > 0 ? 'yellow' : undefined,
+    },
+    {
+      icon: TrendingUp,
+      label: 'Fechado no mês',
+      value: recovered.total,
+      format: 'currency',
+      hint: recovered.total > 0 ? `${roi.toLocaleString('pt-BR')}x a assinatura` : 'Marque "Fechou" para ver',
+      tone: recovered.total > 0 ? 'green' : undefined,
+    },
+  ];
+
   return (
     <div className="dashboard" {...spotlight}>
       <header className="dash-greet enter">
@@ -170,6 +222,12 @@ export function DashboardPage() {
         </h1>
         <span className="live">Radar atualizado agora</span>
       </header>
+
+      {hasHistory && (
+        <div className="kpi-row">
+          {kpis.map((kpi) => <KpiCard key={kpi.label} {...kpi} />)}
+        </div>
+      )}
 
       <div className="dash-grid">
         <section className={`hero-card enter ${summary.riskCount > 0 ? '' : 'is-calm'}`} aria-labelledby="hero-titulo">
@@ -261,59 +319,6 @@ export function DashboardPage() {
           </section>
         )}
 
-        {hasHistory && (
-          <>
-            <article className="spot tilt stat enter" style={{ '--d': '140ms' } as CSSProperties}>
-              <small>Em jogo</small>
-              <span className="stat-big tabular">{formatCurrency(summary.openTotal)}</span>
-              <span className="stat-foot">
-                {twoWeeksDelta !== 0 ? (
-                  <>
-                    <b className={twoWeeksDelta > 0 ? '' : 'is-down'}>
-                      {twoWeeksDelta > 0 ? '+' : '−'}
-                      {formatCurrency(Math.abs(twoWeeksDelta))}
-                    </b>{' '}
-                    nas últimas 2 semanas
-                  </>
-                ) : (
-                  `${summary.openCount} ${summary.openCount === 1 ? 'oportunidade aberta' : 'oportunidades abertas'}`
-                )}
-                {openLimit !== null && summary.openCount >= openLimit * 0.9 && (
-                  <span className="text-warning"> · limite do plano: {openLimit}</span>
-                )}
-              </span>
-              <Sparkline values={history} />
-            </article>
-
-            <article className="spot tilt stat enter" style={{ '--d': '200ms' } as CSSProperties}>
-              <small>Conversão</small>
-              <div className="stat-ring">
-                <RingGauge
-                  ratio={ready ? (conv.rate === null ? conv.closed / MIN_CLOSED_FOR_CONVERSION : conv.rate / 100) : 0}
-                  label={conv.rate === null ? `${conv.closed}/${MIN_CLOSED_FOR_CONVERSION}` : `${conv.rate}%`}
-                />
-                <p className="stat-foot">
-                  {conv.rate === null
-                    ? `A taxa aparece com ${MIN_CLOSED_FOR_CONVERSION} oportunidades encerradas (ganhas ou perdidas).`
-                    : `das ${conv.closed} oportunidades encerradas viraram venda.`}
-                </p>
-              </div>
-            </article>
-
-            <article className="spot tilt stat enter" style={{ '--d': '260ms' } as CSSProperties}>
-              <small>Fechado em {currentMonthLabel()}</small>
-              <CountUp className="stat-big stat-big--jade" value={recovered.total} format="currency" start />
-              {recovered.total > 0 ? (
-                <span className="roi-pill">
-                  {roi.toLocaleString('pt-BR')}x a assinatura ({formatCurrency(cost)})
-                </span>
-              ) : (
-                <span className="stat-foot">Marque “Fechou” quando uma venda sair.</span>
-              )}
-              <WeekBars values={weekly} />
-            </article>
-          </>
-        )}
 
         {summary.openCount > 0 && (
           <section className="spot flow-card enter" aria-labelledby="fluxo-titulo" style={{ '--d': '320ms' } as CSSProperties}>
