@@ -1,10 +1,21 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useAuth } from '../../auth/useAuth';
 import { friendlyError } from '../../lib/supabase';
 import type { MessageTemplate, NewOpportunity, Opportunity, ProposalLink } from '../../lib/types';
+import { ProposalAlertBanner } from '../components/ProposalAlertBanner';
 import { OpportunityDialog } from '../components/OpportunityDialog';
 import { QuickEntryDialog } from '../components/QuickEntryDialog';
+import { useProposalAlerts } from '../hooks/useProposalAlerts';
 import * as api from '../services/api';
 import { AppDataContext } from './appDataContext';
+
+/** Montado dentro do AppDataContext.Provider para ter acesso ao useAppData e useAuth. */
+function ProposalAlertsMount() {
+  const { session } = useAuth();
+  const userId = session?.user?.id;
+  const { alerts, dismissAlert } = useProposalAlerts(userId);
+  return <ProposalAlertBanner alerts={alerts} onDismiss={dismissAlert} />;
+}
 
 function sortByFollowUp(items: Opportunity[]): Opportunity[] {
   return [...items].sort((a, b) => a.follow_up_on.localeCompare(b.follow_up_on));
@@ -106,6 +117,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       {children}
       <QuickEntryDialog open={quickEntryOpen} onClose={() => setQuickEntryOpen(false)} />
       <OpportunityDialog opportunity={selected} onClose={() => setSelectedId(null)} />
+      <ProposalAlertsMount />
     </AppDataContext.Provider>
   );
 }
