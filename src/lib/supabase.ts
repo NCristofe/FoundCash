@@ -1,7 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.VITE_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const url = import.meta.env.VITE_SUPABASE_URL ?? 'https://jttwmccqqshdltafaaze.supabase.co';
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? 'sb_publishable_S8sg7VDBv8Dh6pt3hgylJg_FQzX5ftv';
 
 /** `null` quando as variáveis de ambiente não foram configuradas (a landing continua funcionando). */
 export const supabase: SupabaseClient | null = url && anonKey ? createClient(url, anonKey) : null;
