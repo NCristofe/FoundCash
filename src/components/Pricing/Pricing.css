@@ -24,7 +24,7 @@
 }
 
 .pricing-toggle button.is-active {
-  background: rgba(220, 255, 240, 0.14);
+  background: rgba(255, 255, 255, 0.14);
   color: var(--white);
 }
 
@@ -66,13 +66,13 @@
 }
 
 .plan--highlighted {
-  border-color: rgba(52, 216, 160, 0.45);
+  border-color: rgba(129, 140, 248, 0.45);
   background:
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(52, 216, 160, 0.1), transparent 70%),
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(129, 140, 248, 0.1), transparent 70%),
     var(--card);
   box-shadow:
     var(--shadow-card),
-    0 30px 80px -40px rgba(52, 216, 160, 0.45);
+    0 30px 80px -40px rgba(129, 140, 248, 0.45);
 }
 
 .plan-head {
