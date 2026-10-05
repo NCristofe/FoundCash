@@ -26,7 +26,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1d3a5c, #16304d);
+  background: linear-gradient(135deg, #3f3f46, #27272a);
   font-size: 0.875rem;
   font-weight: 700;
 }
@@ -81,7 +81,7 @@
 .example-progress span {
   height: 6px;
   border-radius: 6px;
-  background: rgba(220, 255, 240, 0.14);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .example-progress .is-sent {
@@ -145,7 +145,7 @@
   margin-bottom: auto;
   padding: 14px 16px;
   border-radius: var(--radius);
-  background: rgba(7, 17, 31, 0.5);
+  background: rgba(9, 9, 11, 0.5);
   border: 1px solid var(--border);
 }
 
@@ -238,7 +238,7 @@
   padding: 16px 18px;
   border-radius: var(--radius);
   border-top-right-radius: 4px;
-  background: #134e3a;
+  background: #1e1b4b;
   font-size: 0.9375rem;
   line-height: 1.55;
 }
