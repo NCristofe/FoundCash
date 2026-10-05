@@ -22,10 +22,10 @@
 
 .feature-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(52, 216, 160, 0.3);
+  border-color: rgba(129, 140, 248, 0.3);
   box-shadow:
     var(--shadow-card),
-    0 18px 50px -28px rgba(52, 216, 160, 0.45);
+    0 18px 50px -28px rgba(129, 140, 248, 0.45);
 }
 
 .feature-icon {
@@ -35,7 +35,7 @@
   height: 48px;
   margin-bottom: 14px;
   border-radius: 14px;
-  border: 1px solid rgba(52, 216, 160, 0.2);
+  border: 1px solid rgba(129, 140, 248, 0.2);
   background: var(--green-soft);
   color: var(--green);
 }
