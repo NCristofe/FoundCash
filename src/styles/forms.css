@@ -25,7 +25,7 @@
   padding: 0 14px;
   border-radius: 12px;
   border: 1px solid var(--border-strong);
-  background: rgba(7, 17, 31, 0.6);
+  background: rgba(9, 9, 11, 0.6);
   font-size: 1rem;
   transition:
     border-color 0.2s var(--ease),
@@ -62,7 +62,7 @@
 .input:focus {
   outline: none;
   border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(52, 216, 160, 0.2);
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
 }
 
 .field input[aria-invalid='true'] {
@@ -94,7 +94,7 @@
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
-  background: rgba(7, 17, 31, 0.5);
+  background: rgba(9, 9, 11, 0.5);
   color: var(--muted);
   font-size: var(--fs-small);
   font-weight: 600;
@@ -106,7 +106,7 @@
 
 .chip:hover {
   color: var(--white);
-  border-color: rgba(220, 255, 240, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .chip[aria-pressed='true'],
