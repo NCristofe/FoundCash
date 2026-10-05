@@ -8,7 +8,7 @@
   inset: 8% 6% 4% 10%;
   z-index: -1;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(52, 216, 160, 0.22), rgba(52, 216, 160, 0.06) 60%, transparent);
+  background: radial-gradient(closest-side, rgba(129, 140, 248, 0.22), rgba(129, 140, 248, 0.06) 60%, transparent);
   filter: blur(40px);
 }
 
@@ -16,7 +16,7 @@
   overflow: hidden;
   border-radius: 18px;
   border: 1px solid var(--border-strong);
-  background: #0c192b;
+  background: #0d0d10;
   box-shadow: var(--shadow-float);
   font-size: 0.8125rem;
   line-height: 1.4;
@@ -30,7 +30,7 @@
   height: 38px;
   padding-inline: 14px;
   border-bottom: 1px solid var(--border);
-  background: rgba(7, 17, 31, 0.6);
+  background: rgba(9, 9, 11, 0.6);
 }
 
 .dash-dots {
@@ -42,7 +42,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: rgba(220, 255, 240, 0.22);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .dash-url {
@@ -51,7 +51,7 @@
   margin-inline: auto;
   padding: 3px 12px;
   border-radius: 6px;
-  background: rgba(220, 255, 240, 0.07);
+  background: rgba(255, 255, 255, 0.07);
   color: var(--muted-2);
   font-size: 0.6875rem;
   text-align: center;
@@ -73,7 +73,7 @@
   gap: 22px;
   padding: 16px 0;
   border-right: 1px solid var(--border);
-  background: rgba(7, 17, 31, 0.35);
+  background: rgba(9, 9, 11, 0.35);
 }
 
 .dash-sidebar ul {
@@ -160,8 +160,8 @@
 
 .dash-stat--green {
   --stat-color: var(--green);
-  border-color: rgba(52, 216, 160, 0.22);
-  background: linear-gradient(180deg, rgba(52, 216, 160, 0.08), var(--card));
+  border-color: rgba(129, 140, 248, 0.22);
+  background: linear-gradient(180deg, rgba(129, 140, 248, 0.08), var(--card));
 }
 
 .dash-stat--yellow {
@@ -284,7 +284,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1d3a5c, #16304d);
+  background: linear-gradient(135deg, #3f3f46, #27272a);
   color: var(--white);
   font-size: 0.6875rem;
   font-weight: 700;
@@ -337,7 +337,7 @@
   min-height: 30px;
   padding: 0 11px;
   border-radius: 8px;
-  border: 1px solid rgba(52, 216, 160, 0.35);
+  border: 1px solid rgba(129, 140, 248, 0.35);
   background: var(--green-soft);
   color: var(--green);
   font-size: 0.72rem;
@@ -349,7 +349,7 @@
 }
 
 .dash-item-action:hover:not(:disabled) {
-  background: rgba(52, 216, 160, 0.2);
+  background: rgba(129, 140, 248, 0.2);
   transform: translateY(-1px);
 }
 
@@ -369,7 +369,7 @@
   padding: 10px 14px 10px 10px;
   border-radius: 14px;
   border: 1px solid var(--border-strong);
-  background: rgba(16, 31, 51, 0.92);
+  background: rgba(17, 17, 20, 0.92);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-float);
