@@ -22,20 +22,20 @@ export function LogoMark({ size = 32, className = '' }: LogoMarkProps) {
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#22C55E" />
-          <stop offset="1" stopColor="#16A34A" />
+          <stop stopColor="#818CF8" />
+          <stop offset="1" stopColor="#4F46E5" />
         </linearGradient>
       </defs>
       <rect width="32" height="32" rx="9" fill={`url(#${gradientId})`} />
-      <path d="M21.5 11.8A7 7 0 1 0 23 16.2" stroke="#07111F" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M21.5 11.8A7 7 0 1 0 23 16.2" stroke="#09090B" strokeWidth="2.6" strokeLinecap="round" />
       <path
         d="M25 7 18.4 13.6M18.2 9.4v4.4h4.4"
-        stroke="#07111F"
+        stroke="#09090B"
         strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="16" cy="16.5" r="2" fill="#07111F" />
+      <circle cx="16" cy="16.5" r="2" fill="#09090B" />
     </svg>
   );
 }
