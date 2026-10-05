@@ -1,54 +1,54 @@
 /* ==========================================================================
-   FoundCash — identidade do app: jade (estilo app de banco).
+   FoundCash — identidade do app: grafite + jade.
    Jade = marca e dinheiro que volta · coral = dinheiro em risco.
    ========================================================================== */
 
 .fc-app {
-  --jade: #0fa372;
-  --jade-bright: #34d8a0;
+  --jade: #6366f1;
+  --jade-bright: #818cf8;
   --jade-deep: #064a36;
   --coral: #ff6b5b;
 
-  --bg: #070b0a;
-  --bg-2: #0b1110;
-  --card: #0e1513;
-  --card-2: #141e1b;
-  --border: rgba(220, 255, 240, 0.08);
-  --border-strong: rgba(220, 255, 240, 0.16);
-  --white: #eef5f2;
-  --muted: #8fa39c;
-  --muted-2: #6f817b;
+  --bg: #09090b;
+  --bg-2: #0d0d10;
+  --card: #111114;
+  --card-2: #18181c;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --white: #fafafa;
+  --muted: #a1a1aa;
+  --muted-2: #71717a;
 
   --green: var(--jade-bright);
   --green-2: var(--jade);
-  --green-soft: rgba(52, 216, 160, 0.12);
-  --green-line: rgba(52, 216, 160, 0.35);
+  --green-soft: rgba(129, 140, 248, 0.12);
+  --green-line: rgba(129, 140, 248, 0.35);
   --yellow: var(--coral);
   --yellow-soft: rgba(255, 107, 91, 0.12);
   --red: #f0525f;
   --red-soft: rgba(240, 82, 95, 0.12);
 
-  --hover: rgba(220, 255, 240, 0.05);
-  --active: rgba(220, 255, 240, 0.09);
+  --hover: rgba(255, 255, 255, 0.05);
+  --active: rgba(255, 255, 255, 0.09);
   --inset: rgba(0, 0, 0, 0.22);
-  --track: rgba(220, 255, 240, 0.1);
-  --track-strong: rgba(220, 255, 240, 0.25);
-  --header-bg: rgba(7, 11, 10, 0.82);
+  --track: rgba(255, 255, 255, 0.1);
+  --track-strong: rgba(255, 255, 255, 0.25);
+  --header-bg: rgba(9, 9, 11, 0.82);
   --backdrop: rgba(0, 0, 0, 0.66);
-  --bubble: #0f4a36;
+  --bubble: #312e81;
 
-  --radius-sm: 10px;
-  --radius: 14px;
-  --radius-lg: 22px;
-  --radius-xl: 26px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
   --shadow-float: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 40px 80px -30px rgba(0, 0, 0, 0.85);
 
-  --font: 'Manrope', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font: 'Inter', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
   min-height: 100vh;
   background:
-    radial-gradient(1200px 520px at 8% -8%, rgba(15, 163, 114, 0.13), transparent 60%),
+    radial-gradient(1200px 520px at 8% -8%, rgba(99, 102, 241, 0.13), transparent 60%),
     var(--bg);
   color: var(--white);
   font-family: var(--font);
@@ -57,11 +57,11 @@
 
 html:has(.fc-app),
 html:has(.fc-app) body {
-  background: #070b0a;
+  background: #09090b;
 }
 
 .fc-app ::selection {
-  background: rgba(52, 216, 160, 0.3);
+  background: rgba(129, 140, 248, 0.3);
 }
 
 .fc-app :focus-visible {
@@ -80,7 +80,7 @@ html:has(.fc-app) body {
 
 /* Marca */
 .fc-app .logo-mark {
-  filter: drop-shadow(0 6px 14px rgba(15, 163, 114, 0.35));
+  filter: drop-shadow(0 6px 14px rgba(99, 102, 241, 0.35));
 }
 
 .fc-app .logo-mark rect {
@@ -88,17 +88,17 @@ html:has(.fc-app) body {
 }
 
 .fc-app .logo-mark path {
-  stroke: #03261b;
+  stroke: #0b0b2b;
 }
 
 .fc-app .logo-mark circle {
-  fill: #03261b;
+  fill: #0b0b2b;
 }
 
 /* Botões em pílula */
 .fc-app .btn {
-  border-radius: 999px;
-  font-weight: 800;
+  border-radius: 10px;
+  font-weight: 600;
 }
 
 .fc-app .btn-primary {
@@ -109,7 +109,7 @@ html:has(.fc-app) body {
 
 .fc-app .btn-primary:hover {
   background: #ffffff;
-  box-shadow: 0 10px 24px -12px rgba(52, 216, 160, 0.6);
+  box-shadow: 0 10px 24px -12px rgba(129, 140, 248, 0.6);
 }
 
 .fc-app .btn-secondary {
@@ -133,7 +133,7 @@ html:has(.fc-app) body {
 }
 
 .fc-app .btn-jade:hover {
-  background: rgba(52, 216, 160, 0.2);
+  background: rgba(129, 140, 248, 0.2);
 }
 
 /* Formulários */
@@ -154,7 +154,7 @@ html:has(.fc-app) body {
 .fc-app .field textarea:focus,
 .fc-app .input:focus {
   border-color: var(--jade-bright);
-  box-shadow: 0 0 0 3px rgba(52, 216, 160, 0.2);
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
 }
 
 .fc-app .chip {
