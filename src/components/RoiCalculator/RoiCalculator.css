@@ -34,7 +34,7 @@
   height: 6px;
   border-radius: 6px;
   appearance: none;
-  background: linear-gradient(90deg, var(--green) var(--fill), rgba(220, 255, 240, 0.2) var(--fill));
+  background: linear-gradient(90deg, var(--green) var(--fill), rgba(255, 255, 255, 0.2) var(--fill));
   cursor: pointer;
 }
 
@@ -68,9 +68,9 @@
   gap: 20px;
   padding: 32px;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(52, 216, 160, 0.35);
+  border: 1px solid rgba(129, 140, 248, 0.35);
   background:
-    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(52, 216, 160, 0.12), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(129, 140, 248, 0.12), transparent 70%),
     var(--card);
   box-shadow: var(--shadow-card);
 }
