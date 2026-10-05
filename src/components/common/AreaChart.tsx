@@ -49,8 +49,8 @@ export function AreaChart({ values, labels, drawn, ariaLabel, height = 120 }: Ar
         <svg viewBox={`0 0 ${WIDTH} ${height}`} aria-hidden="true" focusable="false">
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#22C55E" stopOpacity="0.28" />
-              <stop offset="100%" stopColor="#22C55E" stopOpacity="0" />
+              <stop offset="0%" stopColor="#818cf8" stopOpacity="0.28" />
+              <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
             </linearGradient>
           </defs>
           {[0.25, 0.5, 0.75].map((ratio) => (
