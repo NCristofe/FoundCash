@@ -4,24 +4,24 @@
 
 :root {
   /* Cores */
-  --bg: #070b0a;
-  --bg-2: #0b1110;
-  --card: #0e1513;
-  --card-2: #141e1b;
-  --border: rgba(220, 255, 240, 0.12);
-  --border-strong: rgba(220, 255, 240, 0.22);
+  --bg: #09090b;
+  --bg-2: #0d0d10;
+  --card: #111114;
+  --card-2: #18181c;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
 
-  --jade: #0fa372;
-  --jade-bright: #34d8a0;
+  --jade: #6366f1;
+  --jade-bright: #818cf8;
   --coral: #ff6b5b;
-  --green: #34d8a0;
-  --green-2: #0fa372;
-  --green-soft: rgba(52, 216, 160, 0.12);
-  --green-line: rgba(52, 216, 160, 0.35);
+  --green: #818cf8;
+  --green-2: #6366f1;
+  --green-soft: rgba(129, 140, 248, 0.12);
+  --green-line: rgba(129, 140, 248, 0.35);
 
-  --white: #eef5f2;
-  --muted: #8fa39c;
-  --muted-2: #6f817b;
+  --white: #fafafa;
+  --muted: #a1a1aa;
+  --muted-2: #71717a;
 
   --red: #f0525f;
   --red-soft: rgba(240, 82, 95, 0.12);
@@ -29,10 +29,10 @@
   --yellow-soft: rgba(255, 107, 91, 0.12);
 
   /* Forma */
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 26px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
   --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 24px 48px -24px rgba(0, 0, 0, 0.7);
   --shadow-float: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 40px 80px -30px rgba(0, 0, 0, 0.8);
 
@@ -43,7 +43,7 @@
   --nav-h: 72px;
 
   /* Tipografia */
-  --font: 'Manrope', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font: 'Inter', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --fs-h1: clamp(2.375rem, 1.55rem + 3.1vw, 4rem);
   --fs-h2: clamp(1.875rem, 1.35rem + 1.7vw, 3rem);
   --fs-h3: clamp(1.25rem, 1.12rem + 0.4vw, 1.5rem);
@@ -168,7 +168,7 @@ button {
 }
 
 ::selection {
-  background: rgba(52, 216, 160, 0.3);
+  background: rgba(129, 140, 248, 0.3);
   color: var(--white);
 }
 
@@ -258,9 +258,9 @@ button {
   gap: 8px;
   min-height: var(--btn-h);
   padding: 0 22px;
-  border-radius: 999px;
+  border-radius: 10px;
   font-size: 0.975rem;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   border: 1px solid transparent;
@@ -296,29 +296,29 @@ button {
 }
 
 .btn-primary {
-  background: var(--green);
-  color: #03261b;
+  background: #6366f1;
+  color: #ffffff;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 10px 24px -12px rgba(52, 216, 160, 0.7);
+    0 10px 24px -12px rgba(129, 140, 248, 0.7);
 }
 
 .btn-primary:hover {
-  background: #5fe6b5;
+  background: #7477f3;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 14px 30px -12px rgba(52, 216, 160, 0.8);
+    0 14px 30px -12px rgba(129, 140, 248, 0.8);
 }
 
 .btn-secondary {
-  background: rgba(220, 255, 240, 0.06);
+  background: rgba(255, 255, 255, 0.06);
   border-color: var(--border-strong);
   color: var(--white);
 }
 
 .btn-secondary:hover {
-  background: rgba(220, 255, 240, 0.1);
-  border-color: rgba(220, 255, 240, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .btn-ghost {
@@ -327,21 +327,21 @@ button {
 }
 
 .btn-ghost:hover {
-  background: rgba(220, 255, 240, 0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .btn-sm {
   --btn-h: 40px;
   padding: 0 16px;
   font-size: 0.9rem;
-  border-radius: 999px;
+  border-radius: 10px;
 }
 
 .btn-lg {
   --btn-h: 56px;
   padding: 0 28px;
   font-size: 1.0625rem;
-  border-radius: 999px;
+  border-radius: 10px;
 }
 
 .btn-block {
@@ -365,7 +365,7 @@ button {
 /* Cartão base ----------------------------------------------------------- */
 
 .surface {
-  background: linear-gradient(180deg, rgba(19, 38, 62, 0.9), rgba(16, 31, 51, 0.9));
+  background: linear-gradient(180deg, rgba(24, 24, 28, 0.9), rgba(17, 17, 20, 0.9));
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
