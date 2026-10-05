@@ -1,6 +1,6 @@
 .badge {
   --badge-color: var(--muted);
-  --badge-bg: rgba(220, 255, 240, 0.1);
+  --badge-bg: rgba(255, 255, 255, 0.1);
   display: inline-flex;
   align-items: center;
   gap: 6px;
