@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background: #070b0a;
+  background: #09090b;
   color: #e2e8f0;
 }
 
@@ -18,8 +18,8 @@
   justify-content: space-between;
   gap: 16px;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(220, 255, 240, 0.1);
-  background: rgba(7, 17, 31, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 9, 11, 0.9);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   position: sticky;
@@ -51,8 +51,8 @@
   flex-shrink: 0;
   padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(52, 216, 160, 0.14);
-  color: #34d8a0;
+  background: rgba(129, 140, 248, 0.14);
+  color: #818cf8;
   font-size: 0.9rem;
   font-weight: 700;
 }
@@ -76,8 +76,8 @@
 
 .proposal-response-panel {
   padding: 24px 20px 32px;
-  border-top: 1px solid rgba(220, 255, 240, 0.12);
-  background: #0d1b2e;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: #111114;
 }
 
 .proposal-response-title {
@@ -109,8 +109,8 @@
   gap: 6px;
   padding: 16px 12px;
   border-radius: 12px;
-  border: 1.5px solid rgba(220, 255, 240, 0.18);
-  background: rgba(220, 255, 240, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
   color: #e2e8f0;
   font-size: 0.875rem;
   font-weight: 600;
@@ -124,8 +124,8 @@
 }
 
 .proposal-btn:hover:not(:disabled) {
-  background: rgba(220, 255, 240, 0.12);
-  border-color: rgba(220, 255, 240, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .proposal-btn:active:not(:disabled) {
@@ -138,13 +138,13 @@
 }
 
 .proposal-btn--fechar {
-  border-color: rgba(52, 216, 160, 0.4);
-  background: rgba(52, 216, 160, 0.08);
+  border-color: rgba(129, 140, 248, 0.4);
+  background: rgba(129, 140, 248, 0.08);
   color: #4ade80;
 }
 .proposal-btn--fechar:hover:not(:disabled) {
-  background: rgba(52, 216, 160, 0.14);
-  border-color: rgba(52, 216, 160, 0.6);
+  background: rgba(129, 140, 248, 0.14);
+  border-color: rgba(129, 140, 248, 0.6);
 }
 
 .proposal-btn--duvida {
@@ -168,8 +168,8 @@
 }
 
 .proposal-btn--pensar {
-  border-color: rgba(220, 255, 240, 0.25);
-  background: rgba(220, 255, 240, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06);
   color: #94a3b8;
 }
 
@@ -187,8 +187,8 @@
   width: 100%;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid rgba(220, 255, 240, 0.2);
-  background: rgba(220, 255, 240, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
   color: #e2e8f0;
   font-family: inherit;
   font-size: 0.9rem;
@@ -199,7 +199,7 @@
 }
 
 .proposal-note-area textarea:focus {
-  border-color: rgba(52, 216, 160, 0.5);
+  border-color: rgba(129, 140, 248, 0.5);
 }
 
 /* Respondido ---------------------------------------------------------------- */
@@ -259,11 +259,11 @@
   text-align: center;
   font-size: 0.78rem;
   color: #475569;
-  border-top: 1px solid rgba(220, 255, 240, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .proposal-footer a {
-  color: #34d8a0;
+  color: #818cf8;
   font-weight: 600;
   text-decoration: none;
 }
