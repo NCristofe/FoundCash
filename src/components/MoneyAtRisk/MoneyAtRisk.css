@@ -1,6 +1,6 @@
 .money {
   background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(52, 216, 160, 0.07), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(129, 140, 248, 0.07), transparent 70%),
     var(--bg-2);
   border-block: 1px solid var(--border);
 }
@@ -63,7 +63,7 @@
   padding: 16px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: rgba(7, 17, 31, 0.45);
+  background: rgba(9, 9, 11, 0.45);
 }
 
 .money-item--green {
@@ -93,7 +93,7 @@
   height: 4px;
   margin-top: 10px;
   border-radius: 4px;
-  background: rgba(220, 255, 240, 0.12);
+  background: rgba(255, 255, 255, 0.12);
   overflow: hidden;
 }
 
@@ -120,7 +120,7 @@
   padding: 24px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  background: rgba(7, 17, 31, 0.45);
+  background: rgba(9, 9, 11, 0.45);
 }
 
 .money-chart-head {
@@ -162,7 +162,7 @@
   /* 80% da coluna fica para a barra; o restante para rótulo e valor */
   height: calc(var(--height) * 0.8);
   border-radius: 8px 8px 4px 4px;
-  background: linear-gradient(180deg, rgba(220, 255, 240, 0.35), rgba(220, 255, 240, 0.12));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.12));
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform 0.9s var(--ease);
@@ -170,8 +170,8 @@
 }
 
 .money-bar.is-current .money-bar-fill {
-  background: linear-gradient(180deg, var(--green), rgba(52, 216, 160, 0.35));
-  box-shadow: 0 0 24px -6px rgba(52, 216, 160, 0.6);
+  background: linear-gradient(180deg, var(--green), rgba(129, 140, 248, 0.35));
+  box-shadow: 0 0 24px -6px rgba(129, 140, 248, 0.6);
 }
 
 .money-panel.is-active .money-bar-fill {
@@ -190,7 +190,7 @@
   padding: 3px 8px;
   border-radius: 6px;
   background: var(--green);
-  color: #052e16;
+  color: #ffffff;
   font-size: 0.7rem;
   font-weight: 700;
   white-space: nowrap;
