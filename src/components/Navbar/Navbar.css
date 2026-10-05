@@ -10,7 +10,7 @@
 }
 
 .navbar.is-solid {
-  background: rgba(7, 17, 31, 0.82);
+  background: rgba(9, 9, 11, 0.82);
   border-bottom-color: var(--border);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   backdrop-filter: blur(14px) saturate(140%);
@@ -46,7 +46,7 @@
 
 .navbar-links a:hover {
   color: var(--white);
-  background: rgba(220, 255, 240, 0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .navbar-actions {
@@ -64,7 +64,7 @@
   margin-left: auto;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(220, 255, 240, 0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* Menu mobile */
