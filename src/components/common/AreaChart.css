@@ -20,7 +20,7 @@
 }
 
 .area-chart-grid {
-  stroke: rgba(220, 255, 240, 0.1);
+  stroke: rgba(255, 255, 255, 0.1);
   stroke-dasharray: 3 4;
 }
 
@@ -33,7 +33,7 @@
 }
 
 .area-chart-halo {
-  fill: rgba(52, 216, 160, 0.18);
+  fill: rgba(129, 140, 248, 0.18);
 }
 
 .area-chart-dot {
