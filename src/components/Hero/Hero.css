@@ -11,8 +11,8 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba(220, 255, 240, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(220, 255, 240, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 56px 56px;
   -webkit-mask-image: radial-gradient(ellipse 70% 60% at 60% 30%, #000 20%, transparent 75%);
   mask-image: radial-gradient(ellipse 70% 60% at 60% 30%, #000 20%, transparent 75%);
@@ -40,7 +40,7 @@
   padding: 6px 14px 6px 10px;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
-  background: rgba(16, 31, 51, 0.7);
+  background: rgba(17, 17, 20, 0.7);
   font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--muted);
@@ -86,7 +86,7 @@
 .hero-highlight {
   color: var(--green);
   white-space: nowrap;
-  background-image: linear-gradient(transparent 70%, rgba(52, 216, 160, 0.2) 70%, rgba(52, 216, 160, 0.2) 94%, transparent 94%);
+  background-image: linear-gradient(transparent 70%, rgba(129, 140, 248, 0.2) 70%, rgba(129, 140, 248, 0.2) 94%, transparent 94%);
   background-repeat: no-repeat;
   background-size: 0% 100%;
   animation: highlight-in 0.9s var(--ease) 0.7s forwards;
