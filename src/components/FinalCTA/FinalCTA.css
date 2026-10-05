@@ -19,7 +19,7 @@
   z-index: -1;
   height: 90%;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(52, 216, 160, 0.22), transparent);
+  background: radial-gradient(closest-side, rgba(129, 140, 248, 0.22), transparent);
   filter: blur(30px);
 }
 
