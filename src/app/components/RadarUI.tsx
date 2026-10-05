@@ -39,8 +39,8 @@ export function Sparkline({ values }: { values: number[] }) {
     <svg className="spark" viewBox="0 0 300 64" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#34d8a0" stopOpacity="0.35" />
-          <stop offset="1" stopColor="#34d8a0" stopOpacity="0" />
+          <stop offset="0" stopColor="#818cf8" stopOpacity="0.35" />
+          <stop offset="1" stopColor="#818cf8" stopOpacity="0" />
         </linearGradient>
       </defs>
       <path d={`${line} L300 64 L0 64 Z`} fill={`url(#${gradientId})`} />
@@ -58,8 +58,8 @@ export function RingGauge({ ratio, label }: { ratio: number; label: string }) {
     <svg className="ring" viewBox="0 0 92 92" aria-hidden="true">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#34d8a0" />
-          <stop offset="1" stopColor="#0fa372" />
+          <stop offset="0" stopColor="#818cf8" />
+          <stop offset="1" stopColor="#6366f1" />
         </linearGradient>
       </defs>
       <circle className="ring-track" cx="46" cy="46" r="38" />
@@ -104,7 +104,7 @@ export function burst(canvas: HTMLCanvasElement | null) {
   const context = canvas.getContext('2d');
   if (!context) return;
   context.scale(ratio, ratio);
-  const colors = ['#34d8a0', '#eafff6', '#0fa372', '#b8ffe3'];
+  const colors = ['#818cf8', '#eafff6', '#6366f1', '#b8ffe3'];
   const particles = Array.from({ length: 80 }, () => ({
     x: rect.width * 0.22,
     y: rect.height * 0.42,
