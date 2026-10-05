@@ -5,7 +5,7 @@
   padding: 56px 48px 40px;
   border-radius: var(--radius-xl);
   border: 1px dashed var(--border-strong);
-  background: rgba(11, 23, 40, 0.6);
+  background: rgba(13, 13, 16, 0.6);
 }
 
 .recovery-flag {
@@ -52,7 +52,7 @@
 .recovery-card--after {
   --card-accent: var(--green);
   background:
-    radial-gradient(ellipse 80% 70% at 50% 0%, rgba(52, 216, 160, 0.1), transparent 70%),
+    radial-gradient(ellipse 80% 70% at 50% 0%, rgba(129, 140, 248, 0.1), transparent 70%),
     var(--card);
 }
 
